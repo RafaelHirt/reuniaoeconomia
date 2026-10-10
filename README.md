@@ -10,7 +10,7 @@ Use Node.js 24 (ou versão >= 20).
 npm run dev
 ```
 
-Servidor na porta 5173. Navegue pelo menu, pelas setas da tela ou pelas teclas ← / →. Home e End levam à primeira e à última tela. O botão **Imprimir / PDF** inclui as seis telas; **Tela cheia** ativa o modo de apresentação quando suportado pelo navegador.
+Servidor na porta 5173. Navegue pelo menu, pelas setas da tela ou pelas teclas ← / →. Home e End levam à primeira e à última tela. As setas do navegador preservam o histórico de telas; a troca de unidade volta ao início do texto e mantém o item selecionado visível no menu do celular. O botão **Imprimir / PDF** inclui as seis telas; **Tela cheia** ativa o modo de apresentação quando suportado pelo navegador.
 
 ```sh
 npm run build
@@ -35,8 +35,8 @@ Não são necessárias variáveis de ambiente. A publicação no Netlify será f
 - Pauta II — Aditivos em tramitação na Economia atualmente: Rede HEMO (SEI nº 202600010051458, manifestação com check) e PC SLMB (despacho técnico de 29/09/2026, pendente GAB/Economia).
 - Pauta III — Prazo de análises: destaque à primeira manifestação da Economia, em dias após a SEAD; CRESM (53 dias), PC de Goianésia (44), HUGOL (28) e HEF (27), em ordem decrescente.
 
-Os valores, prazos e referências SEI foram fornecidos para a reunião, sem consulta independente aos documentos. A data de 29/09/2026 e a manifestação da Rede HEMO foram informadas pelo usuário. Os textos das condicionantes são reproduzidos a partir do conteúdo fornecido, com separação dos números SEI em rodapés.
+Os valores, prazos e referências SEI foram fornecidos para a reunião, sem consulta independente aos documentos. A data de 29/09/2026 e a manifestação da Rede HEMO foram informadas pelo usuário. Os textos das condicionantes são reproduzidos a partir do conteúdo fornecido, com os números SEI no próprio texto das citações.
 
-A identidade visual usa verde, amarelo e uma assinatura textual inspirada em Goiás / SES-GO. A assinatura é textual; a imagem da marca enviada na conversa ainda precisa de um arquivo acessível para incorporação. Não se utiliza um símbolo que simule o logotipo oficial.
+A identidade visual usa verde, amarelo e a logo oficial SUS / SES / Estado de Goiás, preservada sem alterações em `assets/logo-ses-go.png`. Fonte: [Sala de Imprensa da SES-GO](https://goias.gov.br/saude/sala-de-imprensa/), arquivo [Bloco_Logo SES.zip](https://goias.gov.br/saude/wp-content/uploads/sites/34/sala-de-imprensa/Bloco_Logo%20SES.zip). A logo é servida localmente, sem depender de acesso ao portal durante o uso da apresentação.
 
 Edite o texto em `index.html`, os estilos em `styles.css` e a navegação em `app.js`.

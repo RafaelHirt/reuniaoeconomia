@@ -3,7 +3,7 @@ const links = [...document.querySelectorAll('nav [data-slide]')];
 const previous = document.querySelector('#previous');
 const next = document.querySelector('#next');
 let current = 0;
-function showSlide(index) {
+function showSlide(index, moveFocus = false) {
   current = Math.min(Math.max(index, 0), slides.length - 1);
   slides.forEach((slide, i) => { slide.hidden = i !== current; });
   links.forEach((link, i) => {
@@ -14,32 +14,57 @@ function showSlide(index) {
   document.querySelector('#counter').textContent = `${String(current + 1).padStart(2, '0')} / ${String(slides.length).padStart(2, '0')}`;
   document.querySelector('#section-name').textContent = links[current].textContent.slice(2).trim();
   document.querySelector('#progress-fill').style.width = `${(current + 1) / slides.length * 100}%`;
+  document.querySelector('.progress').setAttribute('aria-valuenow', String(current + 1));
   previous.disabled = current === 0;
   next.disabled = current === slides.length - 1;
+  if (moveFocus) {
+    const heading = slides[current].querySelector('h1');
+    heading.setAttribute('tabindex', '-1');
+    heading.focus({ preventScroll: true });
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    if (matchMedia('(max-width: 900px)').matches) {
+      links[current].scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'instant' });
+    }
+  }
   document.title = `${slides[current].querySelector('h1').textContent.replace(/\s+/g, ' ').trim()} • SES-GO`;
 }
 function navigate(index) {
   const target = Math.min(Math.max(index, 0), slides.length - 1);
-  showSlide(target);
-  if (location.hash !== `#${slides[target].id}`) location.hash = slides[target].id;
+  if (target === current) return;
+  history.pushState(null, '', `#${slides[target].id}`);
+  showSlide(target, true);
 }
 function syncHash() {
   if (['#slmb-custeio', '#slmb-implantacao'].includes(location.hash)) {
     history.replaceState(null, '', '#slmb');
   }
   const index = slides.findIndex(slide => `#${slide.id}` === location.hash);
-  showSlide(index < 0 ? 0 : index);
+  showSlide(index < 0 ? 0 : index, true);
 }
 previous.addEventListener('click', () => navigate(current - 1));
 next.addEventListener('click', () => navigate(current + 1));
 document.querySelector('#begin').addEventListener('click', () => navigate(1));
 window.addEventListener('hashchange', syncHash);
+window.addEventListener('popstate', syncHash);
+document.querySelectorAll('a[href^="#"]').forEach(link => {
+  const index = slides.findIndex(slide => `#${slide.id}` === link.getAttribute('href'));
+  if (index < 0) return;
+  link.addEventListener('click', event => {
+    if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    if (index !== current) navigate(index);
+  });
+});
 document.addEventListener('keydown', event => {
   if (event.altKey || event.ctrlKey || event.metaKey || ['INPUT', 'TEXTAREA', 'SELECT'].includes(event.target.tagName)) return;
   if (['ArrowRight', 'PageDown'].includes(event.key)) { event.preventDefault(); navigate(current + 1); }
   if (['ArrowLeft', 'PageUp'].includes(event.key)) { event.preventDefault(); navigate(current - 1); }
   if (event.key === 'Home') { event.preventDefault(); navigate(0); }
   if (event.key === 'End') { event.preventDefault(); navigate(slides.length - 1); }
+});
+document.querySelector('.skip-link').addEventListener('click', event => {
+  event.preventDefault();
+  document.querySelector('#presentation').focus({ preventScroll: true });
 });
 document.querySelector('#print').addEventListener('click', () => window.print());
 const fullscreenButton = document.querySelector('#fullscreen');
@@ -54,3 +79,7 @@ document.addEventListener('fullscreenchange', () => {
   fullscreenButton.textContent = document.fullscreenElement ? 'Sair da tela cheia ⛶' : 'Tela cheia ⛶';
 });
 syncHash();
+// Evita o salto automático do navegador ao abrir um link de unidade.
+window.addEventListener('load', () => {
+  setTimeout(() => window.scrollTo({ top: 0, behavior: 'instant' }), 0);
+});
