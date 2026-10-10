@@ -10,7 +10,7 @@ Use Node.js 24 (ou versão >= 20).
 npm run dev
 ```
 
-Servidor na porta 5173. Navegue pelo menu, pelas setas da tela ou pelas teclas ← / →. Home e End levam à primeira e à última tela. O botão **Imprimir / PDF** inclui as sete telas; **Tela cheia** ativa o modo de apresentação quando suportado pelo navegador.
+Servidor na porta 5173. Navegue pelo menu, pelas setas da tela ou pelas teclas ← / →. Home e End levam à primeira e à última tela. O botão **Imprimir / PDF** inclui as seis telas; **Tela cheia** ativa o modo de apresentação quando suportado pelo navegador.
 
 ```sh
 npm run build
@@ -31,15 +31,12 @@ Não são necessárias variáveis de ambiente. A publicação no Netlify será f
 ## Conteúdo
 
 - Abertura e pauta.
-- PC de Posse: subprogramação em 2027.
-- PC SLMB: custeio da hemodiálise e referência SUS.
-- PC SLMB: implantação de serviços.
-- HEF: produção, repasses e reajuste.
-- Aditivos na Economia: PC SLMB e Rede HEMO.
-- Primeira manifestação da Economia após SEAD: CRESM (53 dias), PC de Goianésia (44), HUGOL (28) e HEF (27).
+- Pauta I — Condicionantes: textos fornecidos do Despacho da Economia, agrupados por PC Posse, PC SLMB e HEF, sem gráficos ou análises adicionais.
+- Pauta II — Aditivos em tramitação na Economia atualmente: Rede HEMO (SEI nº 202600010051458, manifestação com check) e PC SLMB (despacho técnico de 29/09/2026, pendente GAB/Economia).
+- Pauta III — Prazo de análises: destaque à primeira manifestação da Economia, em dias após a SEAD; CRESM (53 dias), PC de Goianésia (44), HUGOL (28) e HEF (27), em ordem decrescente.
 
-Os valores, prazos e referências SEI foram fornecidos para a reunião, sem consulta independente aos documentos. Não foi presumido status detalhado para a Rede HEMO, ano da assinatura de 29/9 ou critério de contagem dos dias. Valores de comparação (3,4 vezes e meta de 410 exames) foram calculados a partir dos números fornecidos.
+Os valores, prazos e referências SEI foram fornecidos para a reunião, sem consulta independente aos documentos. A data de 29/09/2026 e a manifestação da Rede HEMO foram informadas pelo usuário. Os textos das condicionantes são reproduzidos a partir do conteúdo fornecido, com separação dos números SEI em rodapés.
 
-A identidade visual usa verde, amarelo e uma assinatura textual inspirada em Goiás / SES-GO. O símbolo decorativo não é o logotipo oficial; substituir pela marca oficial quando o arquivo autorizado estiver disponível.
+A identidade visual usa verde, amarelo e uma assinatura textual inspirada em Goiás / SES-GO. A assinatura é textual; a imagem da marca enviada na conversa ainda precisa de um arquivo acessível para incorporação. Não se utiliza um símbolo que simule o logotipo oficial.
 
 Edite o texto em `index.html`, os estilos em `styles.css` e a navegação em `app.js`.

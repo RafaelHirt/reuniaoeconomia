@@ -11,7 +11,7 @@ function showSlide(index) {
     if (i === current) link.setAttribute('aria-current', 'step');
     else link.removeAttribute('aria-current');
   });
-  document.querySelector('#counter').textContent = `${String(current + 1).padStart(2, '0')} / 07`;
+  document.querySelector('#counter').textContent = `${String(current + 1).padStart(2, '0')} / ${String(slides.length).padStart(2, '0')}`;
   document.querySelector('#section-name').textContent = links[current].textContent.slice(2).trim();
   document.querySelector('#progress-fill').style.width = `${(current + 1) / slides.length * 100}%`;
   previous.disabled = current === 0;
@@ -24,6 +24,9 @@ function navigate(index) {
   if (location.hash !== `#${slides[target].id}`) location.hash = slides[target].id;
 }
 function syncHash() {
+  if (['#slmb-custeio', '#slmb-implantacao'].includes(location.hash)) {
+    history.replaceState(null, '', '#slmb');
+  }
   const index = slides.findIndex(slide => `#${slide.id}` === location.hash);
   showSlide(index < 0 ? 0 : index);
 }
