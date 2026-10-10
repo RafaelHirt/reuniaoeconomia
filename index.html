@@ -12,7 +12,7 @@
 <body class="presentation-mode">
   <aside class="sidebar" id="agenda-menu">
     <a class="brand" href="#abertura" aria-label="SES Goiás — abertura"><img src="assets/logo-ses-clara.png" alt="SUS — Secretaria de Estado da Saúde — Estado de Goiás" width="3338" height="675"></a>
-    <div class="rail-label">PAUTA DA REUNIÃO</div>
+    <button id="agenda-close" class="agenda-close" aria-label="Fechar pautas">×</button><div class="rail-label">PAUTA DA REUNIÃO</div>
     <nav aria-label="Tópicos da apresentação">
       <a href="#abertura" data-slide="0"><span>01</span>Visão geral</a>
       <div class="nav-group">PAUTA I · CONDICIONANTES</div>
@@ -26,9 +26,10 @@
     </nav>
     <div class="rail-bottom"><span class="tiny-dot"></span> Alinhamento institucional<small>SES-GO / ECONOMIA</small></div>
   </aside>
+  <button id="menu-backdrop" class="menu-backdrop" aria-label="Fechar pautas" tabindex="-1" hidden></button>
   <a class="skip-link" href="#presentation">Ir para o conteúdo</a>
   <div class="workspace">
-    <header class="topbar"><span>REUNIÃO DE ALINHAMENTO <i>/</i> ECONOMIA</span><div><button id="agenda-toggle" aria-expanded="false" aria-controls="agenda-menu">Pautas</button><button id="mode-toggle" aria-pressed="true">Modo leitura</button><button id="print" title="Imprimir ou salvar em PDF">Imprimir / PDF</button><button id="fullscreen" title="Alternar tela cheia">Tela cheia ⛶</button></div></header>
+    <header class="topbar"><span class="meeting-brand"><b>SES-GO</b><i>/</i>Reunião com a Economia</span><div><button id="agenda-toggle" aria-expanded="false" aria-controls="agenda-menu">Pautas</button><button id="mode-toggle" aria-pressed="true">Modo leitura</button><button id="print" title="Imprimir ou salvar em PDF">Imprimir / PDF</button><button id="fullscreen" title="Alternar tela cheia">Tela cheia</button></div></header>
     <main id="presentation" tabindex="-1">
       <section class="slide cover" id="abertura" aria-labelledby="title-0">
         <img class="cover-logo" src="assets/logo-ses-escura.png" alt="SUS — Secretaria de Estado da Saúde — Estado de Goiás" width="3338" height="675">
@@ -63,7 +64,7 @@
         </tbody></table></div>
       </section>
     </main>
-    <footer class="controls"><div><span id="counter">01 / 06</span><span id="section-name">Visão geral</span></div><div class="progress" aria-label="Progresso da apresentação" role="progressbar" aria-valuemin="1" aria-valuemax="6" aria-valuenow="1"><span id="progress-fill"></span></div><div class="navigation"><span class="key-hint">Navegue com ← →</span><button id="previous" aria-label="Tela anterior">←</button><button id="next" aria-label="Próxima tela">→</button></div></footer>
+    <footer class="controls"><div><span id="counter">01 / 06</span><span id="section-name">Visão geral</span></div><div class="progress" aria-label="Progresso da apresentação" role="progressbar" aria-valuemin="1" aria-valuemax="6" aria-valuenow="1"><span id="progress-fill"></span></div><nav class="pauta-shortcuts" aria-label="Navegação entre pautas"><a href="#posse" data-pauta-link="I"><span>I</span> Condicionantes</a><a href="#aditivos" data-pauta-link="II"><span>II</span> Aditivos</a><a href="#prazos" data-pauta-link="III"><span>III</span> Prazos</a></nav><div class="navigation"><span class="key-hint">Navegue com ← →</span><button id="previous" aria-label="Tela anterior">←</button><button id="next" aria-label="Próxima tela"><span>Próxima</span> →</button></div></footer>
     <div class="material-note">Dados e referências fornecidos para a reunião. Documentos SEI não verificados nesta apresentação.</div>
   </div>
 </body>
