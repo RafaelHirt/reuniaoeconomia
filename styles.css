@@ -163,3 +163,5 @@ blockquote p:last-child{margin-bottom:0}
 @media print{.quote-reference{margin-top:10px}.sei-badge{font-size:9px;padding:5px 9px}.brand,.cover-logo{background:transparent}.quotation-sheet blockquote .citation-text p{font-size:12px;line-height:1.6}#posse .quotation-sheet .citation-text p{font-size:24px}}
 .addendum-card blockquote{font-style:italic}
 @media print{.slide,.slide[hidden]{transform:none!important;position:static!important;width:auto!important;top:auto!important;left:auto!important;transform-origin:initial!important}}
+.quote-highlight{font-weight:700;background:#f7edca;color:#173f2d;box-decoration-break:clone;-webkit-box-decoration-break:clone;padding:2px 3px;border-radius:3px}
+@media print{.quote-highlight{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
