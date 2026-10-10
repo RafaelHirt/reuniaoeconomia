@@ -26,6 +26,7 @@ function showSlide(index, moveFocus = false) {
       links[current].scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'instant' });
     }
   }
+  fitPresentation();
   document.title = `${slides[current].querySelector('h1').textContent.replace(/\s+/g, ' ').trim()} • SES-GO`;
 }
 function navigate(index) {
@@ -53,6 +54,7 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
     if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
     event.preventDefault();
     if (index !== current) navigate(index);
+    closeAgenda();
   });
 });
 document.addEventListener('keydown', event => {
@@ -83,3 +85,51 @@ syncHash();
 window.addEventListener('load', () => {
   setTimeout(() => window.scrollTo({ top: 0, behavior: 'instant' }), 0);
 });
+
+const modeToggle = document.querySelector('#mode-toggle');
+const agendaToggle = document.querySelector('#agenda-toggle');
+function closeAgenda() {
+  document.body.classList.remove('menu-open');
+  agendaToggle.setAttribute('aria-expanded', 'false');
+}
+function fitPresentation() {
+  const slide = slides[current];
+  if (!document.body.classList.contains('presentation-mode')) {
+    slides.forEach(item => { item.style.transform = ''; item.style.top = ''; item.style.width = ''; });
+    return;
+  }
+  const stage = document.querySelector('#presentation');
+  const mobile = stage.clientWidth < 620;
+  // Mantém uma largura de leitura antes de ajustar o conteúdo à janela.
+  slide.style.width = `${mobile ? Math.max(stage.clientWidth, 800) : stage.clientWidth}px`;
+  slide.style.transform = '';
+  const scale = Math.min(1, stage.clientWidth / slide.offsetWidth, stage.clientHeight / slide.offsetHeight);
+  slide.style.transformOrigin = 'top left';
+  slide.style.transform = `scale(${scale})`;
+  slide.style.left = `${Math.max(0, (stage.clientWidth - slide.offsetWidth * scale) / 2)}px`;
+  slide.style.top = `${Math.max(0, (stage.clientHeight - slide.offsetHeight * scale) / 2)}px`;
+}
+function setPresentation(enabled) {
+  document.body.classList.toggle('presentation-mode', enabled);
+  modeToggle.setAttribute('aria-pressed', String(enabled));
+  modeToggle.textContent = enabled ? 'Modo leitura' : 'Apresentar';
+  closeAgenda();
+  if (!enabled) slides.forEach(item => { item.style.left = ''; item.style.transformOrigin = ''; });
+  fitPresentation();
+  window.scrollTo({ top: 0, behavior: 'instant' });
+}
+modeToggle.addEventListener('click', () => setPresentation(!document.body.classList.contains('presentation-mode')));
+agendaToggle.addEventListener('click', () => {
+  const open = document.body.classList.toggle('menu-open');
+  agendaToggle.setAttribute('aria-expanded', String(open));
+});
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape') {
+    if (document.body.classList.contains('menu-open')) closeAgenda();
+    else if (document.body.classList.contains('presentation-mode')) setPresentation(false);
+  }
+});
+window.addEventListener('resize', fitPresentation);
+window.addEventListener('load', fitPresentation);
+document.querySelectorAll('img').forEach(img => img.addEventListener('load', fitPresentation));
+setPresentation(matchMedia('(min-width: 901px)').matches);

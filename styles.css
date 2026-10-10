@@ -131,3 +131,35 @@ blockquote p:last-child{margin-bottom:0}
 @media(max-width:900px){.brand{max-width:240px;padding:8px}.cover-logo{width:340px}.skip-link{left:20px}}
 @media(max-width:620px){.quotation-sheet,#posse .quotation-sheet{padding:24px 20px}.quotation-sheet blockquote{padding-left:16px}.quotation-sheet blockquote p{font-size:16px;line-height:1.85}#posse .quotation-sheet p{font-size:18px}.quotation-sheet blockquote+blockquote{margin-top:22px;padding-top:22px}.cover-logo{width:100%;max-width:340px;margin-bottom:0}.controls{gap:10px}.controls>div:first-child{flex:1;gap:8px}.navigation{flex-shrink:0}#section-name{max-width:130px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}}
 @media print{.cover-logo{width:340px;margin-bottom:10px}.cover-grid{min-height:100mm}.quotation-sheet,#posse .quotation-sheet{max-width:none;padding:20px 24px;margin-top:15px}.quotation-sheet blockquote{padding-left:18px}.quotation-sheet blockquote p{font-size:12px;line-height:1.7}.quotation-sheet blockquote+blockquote{margin-top:16px;padding-top:16px}#posse .quotation-sheet p{font-size:24px}.controls,.skip-link{display:none!important}.cover-logo{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+.brand{background:transparent;padding:10px 0;border-radius:0}
+.cover-logo{background:transparent;border-radius:0;width:380px}
+.citation-text{font-style:italic}
+.quotation-sheet blockquote .citation-text p{font-style:italic}
+.quote-reference{margin-top:16px;padding-left:0}
+.sei-badge{display:inline-block;padding:7px 12px;border:1px solid #d8dfcf;background:#f0f3e9;border-radius:5px;color:#526747;font-size:11px;font-weight:500;font-style:normal;letter-spacing:.2px;line-height:1.4}
+#agenda-toggle{display:none}
+@media screen{
+.presentation-mode{overflow:hidden}
+.presentation-mode .sidebar{display:none}
+.presentation-mode.menu-open .sidebar{display:flex;width:270px;box-shadow:12px 0 50px #0004}
+.presentation-mode .workspace{margin-left:0;height:100dvh;min-height:0;padding:0 48px;overflow:hidden}
+.presentation-mode .topbar{height:64px;min-height:64px}
+.presentation-mode #presentation{position:relative;min-height:0;overflow:hidden;flex:1}
+.presentation-mode .slide{position:absolute;left:0;right:0;max-width:none;margin:0;padding:20px 0;transform-origin:top center;animation:none}
+.presentation-mode .quotation-sheet{max-width:none;margin-top:16px;padding:24px 30px}
+.presentation-mode .quotation-sheet blockquote p{font-size:18px;line-height:1.7}
+.presentation-mode .quotation-sheet blockquote+blockquote{margin-top:18px;padding-top:18px}
+.presentation-mode .cover-logo{width:300px;margin-bottom:12px}
+.presentation-mode .cover-grid{min-height:390px;gap:70px}
+.presentation-mode .cover h1{font-size:clamp(60px,6vw,100px)}
+.presentation-mode .cover-footer{margin-top:10px}
+.presentation-mode .controls{position:static;flex-shrink:0;padding:14px 0;margin-top:0;box-shadow:none;min-height:64px}
+.presentation-mode .material-note{display:none}
+.presentation-mode #agenda-toggle{display:block}
+.presentation-mode .skip-link{left:20px}
+@media(max-width:900px){.presentation-mode.menu-open .sidebar{position:fixed;inset:0 auto 0 0;padding:30px 20px}.presentation-mode.menu-open nav{flex-direction:column;overflow:visible}.presentation-mode.menu-open .nav-group{display:block}.presentation-mode.menu-open .rail-label{display:block;margin-top:28px}.presentation-mode.menu-open nav a{font-size:12px}.presentation-mode.menu-open nav a.active{box-shadow:inset 3px 0 var(--yellow)}.presentation-mode .workspace{padding:0 24px}.presentation-mode .cover-grid{gap:30px}.presentation-mode .topbar>span{font-size:8px}}
+@media(max-width:620px){.presentation-mode .workspace{padding:0 16px}.presentation-mode .topbar{height:60px;min-height:60px;justify-content:center}.presentation-mode .topbar>span{display:none}.presentation-mode .cover-grid{grid-template-columns:1fr 1fr;gap:24px;padding-top:10px;min-height:360px}.presentation-mode .cover h1{font-size:58px}.presentation-mode .slide{padding:12px 0}.presentation-mode .controls{min-height:60px}.presentation-mode .quotation-sheet{padding:20px}.presentation-mode .quotation-sheet blockquote p{font-size:17px}}
+}
+@media print{.quote-reference{margin-top:10px}.sei-badge{font-size:9px;padding:5px 9px}.brand,.cover-logo{background:transparent}.quotation-sheet blockquote .citation-text p{font-size:12px;line-height:1.6}#posse .quotation-sheet .citation-text p{font-size:24px}}
+.addendum-card blockquote{font-style:italic}
+@media print{.slide,.slide[hidden]{transform:none!important;position:static!important;width:auto!important;top:auto!important;left:auto!important;transform-origin:initial!important}}

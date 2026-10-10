@@ -17,6 +17,8 @@ npm run build
 npm run preview
 ```
 
+No computador, a apresentação abre em **modo apresentação**, com uma tela por vez ajustada à janela. O botão **Pautas** abre o menu, **Modo leitura** restaura a navegação lateral e o tamanho normal dos textos, e **Esc** fecha o menu ou volta ao modo leitura. O modo apresentação funciona também sem tela cheia. No celular, a abertura padrão usa modo leitura para manter o texto legível; o botão Apresentar também está disponível.
+
 O build gera `dist/`. Não há instalação de pacotes: todos os scripts usam módulos nativos do Node.js.
 
 ## Importar no Netlify
@@ -32,11 +34,11 @@ Não são necessárias variáveis de ambiente. A publicação no Netlify será f
 
 - Abertura e pauta.
 - Pauta I — Condicionantes: textos fornecidos do Despacho da Economia, agrupados por PC Posse, PC SLMB e HEF, sem gráficos ou análises adicionais.
-- Pauta II — Aditivos em tramitação na Economia atualmente: Rede HEMO (SEI nº 202600010051458, manifestação com check) e PC SLMB (despacho técnico de 29/09/2026, pendente GAB/Economia).
+- Pauta II — Aditivos em tramitação na Economia atualmente: Rede HEMO (SEI nº 202600010051458, manifestação SEAD com check) e PC SLMB (despacho técnico de 29/09/2026, pendente GAB/Economia).
 - Pauta III — Prazo de análises: destaque à primeira manifestação da Economia, em dias após a SEAD; CRESM (53 dias), PC de Goianésia (44), HUGOL (28) e HEF (27), em ordem decrescente.
 
-Os valores, prazos e referências SEI foram fornecidos para a reunião, sem consulta independente aos documentos. A data de 29/09/2026 e a manifestação da Rede HEMO foram informadas pelo usuário. Os textos das condicionantes são reproduzidos a partir do conteúdo fornecido, com os números SEI no próprio texto das citações.
+Os valores, prazos e referências SEI foram fornecidos para a reunião, sem consulta independente aos documentos. A data de 29/09/2026 e a manifestação da Rede HEMO foram informadas pelo usuário. Os textos das condicionantes são reproduzidos a partir do conteúdo fornecido, em itálico e entre aspas, com os números SEI em etiquetas separadas, sem repetir o nome da unidade.
 
-A identidade visual usa verde, amarelo e a logo oficial SUS / SES / Estado de Goiás, preservada sem alterações em `assets/logo-ses-go.png`. Fonte: [Sala de Imprensa da SES-GO](https://goias.gov.br/saude/sala-de-imprensa/), arquivo [Bloco_Logo SES.zip](https://goias.gov.br/saude/wp-content/uploads/sites/34/sala-de-imprensa/Bloco_Logo%20SES.zip). A logo é servida localmente, sem depender de acesso ao portal durante o uso da apresentação.
+A identidade visual usa verde, amarelo e a logo oficial SUS / SES / Estado de Goiás, com variantes oficiais transparentes em `assets/logo-ses-clara.png` e `assets/logo-ses-escura.png`. Fonte: [Sala de Imprensa da SES-GO](https://goias.gov.br/saude/sala-de-imprensa/), arquivo [Bloco_Logo SES.zip](https://goias.gov.br/saude/wp-content/uploads/sites/34/sala-de-imprensa/Bloco_Logo%20SES.zip). A logo é servida localmente, sem depender de acesso ao portal durante o uso da apresentação.
 
 Edite o texto em `index.html`, os estilos em `styles.css` e a navegação em `app.js`.
