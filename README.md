@@ -10,7 +10,7 @@ Use Node.js 24 (ou versão >= 20).
 npm run dev
 ```
 
-Servidor na porta 5173. Navegue pelo menu, pelas setas da tela ou pelas teclas ← / →. Home e End levam à primeira e à última tela. As setas do navegador preservam o histórico de telas; a troca de unidade volta ao início do texto e mantém o item selecionado visível no menu do celular. O botão **Imprimir / PDF** inclui as seis telas; **Tela cheia** ativa o modo de apresentação quando suportado pelo navegador.
+Servidor na porta 5173. Navegue pelo menu, pelas setas da tela ou pelas teclas ← / →. Home e End levam à primeira e à última tela. As setas do navegador preservam o histórico de telas; a troca de unidade volta ao início do texto e mantém o item selecionado visível no menu do celular. O botão **Imprimir / PDF** inclui as sete telas; **Tela cheia** ativa o modo de apresentação quando suportado pelo navegador.
 
 ```sh
 npm run build
@@ -34,8 +34,10 @@ Não são necessárias variáveis de ambiente. A publicação no Netlify será f
 
 - Abertura e pauta.
 - Pauta I — Condicionantes: textos fornecidos do Despacho da Economia, agrupados por PC Posse, PC SLMB e HEF, sem gráficos ou análises adicionais.
-- Pauta II — Aditivos em tramitação na Economia atualmente: Rede HEMO (SEI nº 202600010051458, manifestação SEAD com check) e PC SLMB (despacho técnico de 29/09/2026, pendente GAB/Economia).
-- Pauta III — Prazo de análises: destaque à primeira manifestação da Economia, em dias após a SEAD; CRESM (53 dias), PC de Goianésia (44), HUGOL (28) e HEF (27), em ordem decrescente.
+- Pauta II — Aditivos em tramitação na Economia: Rede HEMO (SEI nº 202600010051458, manifestação SEAD com check) e PC SLMB (despacho técnico de 29/09/2026, pendente GAB/Economia).
+- Pauta III — Prazo de análises: datas de envio do ofício, manifestação SEAD, área técnica Economia, diligências e manifestação Economia. Intervalos em dias corridos, sem contar o dia inicial. Ordenação pelo intervalo SEAD → área técnica: CRESM 53, PC de Goianésia 44, HUGOL 28 e HEF 28 dias.
+- Totais entre envio e última manifestação informada: CRESM 69 (até área técnica em 02/06/2026; sem data de manifestação Economia), Goianésia 60, HUGOL 73 e HEF 78 dias. Os totais incluem o intervalo anterior à SEAD e não são tempo de trabalho exclusivo da Economia.
+- Encerramento: Obrigado, com a logo oficial clara sobre verde.
 
 Os valores, prazos e referências SEI foram fornecidos para a reunião, sem consulta independente aos documentos. A data de 29/09/2026 e a manifestação da Rede HEMO foram informadas pelo usuário. Os textos das condicionantes são reproduzidos a partir do conteúdo fornecido, em itálico e entre aspas, com os números SEI em etiquetas separadas, sem repetir o nome da unidade.
 

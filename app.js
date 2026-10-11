@@ -41,6 +41,7 @@ function showSlide(index, moveFocus = false) {
   document.querySelector('#section-name').textContent = links[current].textContent.slice(2).trim();
   document.querySelector('#progress-fill').style.width = `${(current + 1) / slides.length * 100}%`;
   document.querySelector('.progress').setAttribute('aria-valuenow', String(current + 1));
+  document.querySelector('.progress').setAttribute('aria-valuemax', String(slides.length));
   previous.disabled = current === 0;
   next.disabled = current === slides.length - 1;
   document.title = `${slides[current].querySelector('h1').textContent.replace(/\s+/g, ' ').trim()} • SES-GO`;
