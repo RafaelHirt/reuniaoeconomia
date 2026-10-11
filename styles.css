@@ -244,3 +244,38 @@ blockquote p:last-child{margin-bottom:0}
 }
 @media screen{.presentation-mode .process-table{table-layout:fixed}.presentation-mode .process-table tbody{display:table-row-group}.presentation-mode .process-table tbody tr{display:table-row}.presentation-mode .process-table th,.presentation-mode .process-table td{display:table-cell;border-bottom:1px solid var(--line);padding:18px 12px}.presentation-mode .process-table thead{position:static;width:auto;height:auto;clip:auto;margin:0;display:table-header-group}.presentation-mode .process-table td::before{display:none}.presentation-mode .process-table td:nth-child(4){background:#f1f5ea}.presentation-mode .process-table .total-cell{margin:0;text-align:right;border-radius:0}.presentation-mode .total-cell strong{display:block}}
 @media print{#prazos .process-table th,#prazos .process-table td{padding:11px 10px}#prazos .time-emphasis{font-size:20px;margin:8px 0 16px}#prazos .event-description{line-height:1.4}#prazos .date-method{margin-top:10px}}
+
+/* Meeting time stays outside the slide, so changing pages never hides it. */
+.meeting-clock{position:relative;z-index:4;display:flex;align-items:center;justify-content:space-between;gap:24px;min-height:76px;padding:14px 0;border-bottom:1px solid var(--line);flex-shrink:0}
+.clock-state{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted);min-width:125px}
+.clock-dot{width:7px;height:7px;border-radius:50%;background:#a5afa2;flex-shrink:0}
+.is-running .clock-dot{background:var(--green-light);box-shadow:0 0 0 4px #2b645014}
+.clock-metrics{display:flex;align-items:center;gap:32px;flex:1;justify-content:center}
+.clock-metrics>div{display:flex;gap:12px;align-items:center}
+.clock-label{font-size:10px;color:var(--muted);white-space:nowrap}
+.clock-value{font-size:22px;color:var(--green);font-weight:600;letter-spacing:-.5px;font-variant-numeric:tabular-nums;min-width:60px}
+.meeting-total{border-left:1px solid var(--line);padding-left:26px}
+.meeting-total .clock-value{color:var(--ink)}
+.clock-actions{display:flex;align-items:center;gap:8px}
+.clock-actions button,.clock-actions summary{font-size:11px;min-height:34px;border:1px solid var(--line);border-radius:7px;padding:8px 12px;color:var(--green);background:transparent;white-space:nowrap;cursor:pointer}
+#clock-toggle{background:var(--green);color:white;border-color:var(--green);min-width:72px}
+.clock-actions button:hover,.clock-actions summary:hover{border-color:var(--green-light)}
+#clock-reset{border-color:transparent;color:var(--muted)}
+#clock-reset:disabled{opacity:.4;cursor:default}
+.clock-actions summary{list-style:none}
+.clock-actions summary::-webkit-details-marker{display:none}
+.clock-actions summary:focus-visible{outline:3px solid var(--yellow);outline-offset:3px}
+.clock-summary-panel{position:absolute;right:0;top:calc(100% + 8px);width:330px;max-width:100%;max-height:calc(100dvh - 195px);overflow-y:auto;padding:24px;background:var(--white);border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 40px #173e3220}
+.clock-summary-panel h2{font-size:18px;letter-spacing:-.3px}
+.clock-summary-panel p{font-size:11px;line-height:1.6;color:var(--muted);margin:8px 0 16px}
+#clock-breakdown section{padding:10px 0;border-top:1px solid var(--line)}
+#clock-breakdown h3{display:flex;justify-content:space-between;gap:12px;font-size:11px;color:var(--green);margin:0 0 6px;font-weight:600}
+#clock-breakdown h3 span,.clock-page-row span{font-variant-numeric:tabular-nums}
+.clock-page-row{display:flex;justify-content:space-between;gap:12px;font-size:11px;line-height:1.8;color:var(--muted);padding-left:10px}
+.total-formula{font-variant-numeric:tabular-nums;white-space:nowrap}
+@media screen and (max-width:1100px){.meeting-clock{gap:12px}.clock-state{min-width:0}.clock-metrics{gap:18px}.clock-metrics>div{display:block}.clock-label{display:block;margin-bottom:2px}.meeting-total{padding-left:18px}.clock-value{font-size:21px}}
+@media screen and (max-width:620px){.meeting-clock{display:grid;grid-template-columns:1fr auto;gap:10px;padding:12px 0;min-height:110px}.clock-state{font-size:10px;grid-column:1;grid-row:2}.clock-metrics{grid-column:1/-1;grid-row:1;justify-content:space-between;gap:12px}.clock-metrics>div{flex:1}.clock-value{font-size:22px}.clock-actions{grid-column:2;grid-row:2;gap:4px}.clock-actions button,.clock-actions summary{font-size:10px;padding:7px 9px;min-height:32px}.clock-summary-panel{max-height:calc(100dvh - 230px)}}
+@media print{.meeting-clock{display:none!important}}
+@media screen{body:not(.presentation-mode) .meeting-clock{position:sticky;top:0;background:var(--paper)}}
+@media screen and (max-width:900px){body:not(.presentation-mode) .meeting-clock{top:68px}}
+@media screen and (max-width:620px){body:not(.presentation-mode) .meeting-clock{top:62px}}

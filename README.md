@@ -19,6 +19,8 @@ npm run preview
 
 No computador, a apresentação abre em **modo apresentação**, com uma tela por vez ajustada à janela. O botão **Pautas** abre o menu, **Modo leitura** restaura a navegação lateral e o tamanho normal dos textos, e **Esc** fecha o menu ou volta ao modo leitura. O rodapé oferece acesso direto às pautas I, II e III. O menu de pautas fecha pelo botão, pelo fundo ou por Esc e mantém o foco de teclado dentro do menu enquanto aberto. No modo apresentação, os dois trechos SLMB ficam lado a lado; no modo leitura, no celular e no PDF, são sequenciais. O modo apresentação funciona também sem tela cheia. No celular, a abertura padrão usa modo leitura para manter o texto legível; o botão Apresentar também está disponível.
 
+O cronômetro exibe o tempo acumulado da página atual, da pauta e da reunião. **Iniciar** começa a contagem; **Pausar** congela todas as contagens e **Retomar** continua. **Iniciar apresentação** também inicia o cronômetro. A troca de página atribui o tempo à página visível, e revisitas acumulam o tempo anterior. **Resumo** mostra todas as páginas e pautas; **Zerar** limpa tudo e pausa. A abertura e o encerramento têm contagens próprias e entram no total da reunião. O estado é guardado apenas na sessão da aba, inclusive após recarregar; não há envio de dados. Enquanto em andamento, conta também o tempo com a aba em segundo plano. Os controles e tempos não aparecem no PDF.
+
 O build gera `dist/`. Não há instalação de pacotes: todos os scripts usam módulos nativos do Node.js.
 
 ## Importar no Netlify
@@ -36,7 +38,7 @@ Não são necessárias variáveis de ambiente. A publicação no Netlify será f
 - Pauta I — Condicionantes: textos fornecidos do Despacho da Economia, agrupados por PC Posse, PC SLMB e HEF, sem gráficos ou análises adicionais.
 - Pauta II — Aditivos em tramitação na Economia: Rede HEMO (SEI nº 202600010051458, manifestação SEAD com check) e PC SLMB (despacho técnico de 29/09/2026, pendente GAB/Economia).
 - Pauta III — Prazo de análises: datas de envio do ofício, manifestação SEAD, área técnica Economia, diligências e manifestação Economia. Intervalos em dias corridos, sem contar o dia inicial. Ordenação pelo intervalo SEAD → área técnica: CRESM 53, PC de Goianésia 44, HUGOL 28 e HEF 28 dias.
-- Totais entre envio e última manifestação informada: CRESM 69 (até área técnica em 02/06/2026; sem data de manifestação Economia), Goianésia 60, HUGOL 73 e HEF 78 dias. Os totais incluem o intervalo anterior à SEAD e não são tempo de trabalho exclusivo da Economia.
+- Total de dias na Economia, conforme os intervalos definidos para a reunião: (SEAD → área técnica) + (ofício de diligências → manifestação Economia). CRESM 53 + 0 = 53, Goianésia 44 + 11 = 55, HUGOL 28 + 12 = 40 e HEF 28 + 20 = 48 dias. No CRESM não houve diligências nem manifestação posterior da Economia. O tempo anterior à SEAD e o intervalo entre área técnica e ofício de diligências não compõem essa soma.
 - Encerramento: Obrigado, com a logo oficial clara sobre verde.
 
 Os valores, prazos e referências SEI foram fornecidos para a reunião, sem consulta independente aos documentos. A data de 29/09/2026 e a manifestação da Rede HEMO foram informadas pelo usuário. Os textos das condicionantes são reproduzidos a partir do conteúdo fornecido, em itálico e entre aspas, com os números SEI em etiquetas separadas, sem repetir o nome da unidade.

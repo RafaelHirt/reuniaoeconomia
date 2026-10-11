@@ -9,6 +9,133 @@ const agendaClose = document.querySelector('#agenda-close');
 const backdrop = document.querySelector('#menu-backdrop');
 let current = 0;
 
+function createMeetingClock() {
+  const storageKey = 'ses-go-meeting-clock-v1';
+  const durations = Object.fromEntries(slides.map(slide => [slide.id, 0]));
+  let active = slides[0].id;
+  let running = false;
+  let checkpoint = Date.now();
+  const clock = document.querySelector('.meeting-clock');
+  const toggle = document.querySelector('#clock-toggle');
+  const reset = document.querySelector('#clock-reset');
+  const summary = document.querySelector('#clock-summary');
+  const status = document.querySelector('#clock-status');
+  const topicNames = { I: 'Pauta I · Condicionantes', II: 'Pauta II · Aditivos', III: 'Pauta III · Prazos', abertura: 'Abertura', encerramento: 'Encerramento' };
+  const topicOf = slide => slide.dataset.pauta || slide.id;
+  const pageNames = Object.fromEntries(slides.map((slide, i) => [slide.id, links[i].textContent.slice(2).trim()]));
+  const groups = ['abertura', 'I', 'II', 'III', 'encerramento'].map(topic => {
+    const group = document.createElement('section');
+    const heading = document.createElement('h3');
+    const value = document.createElement('span');
+    heading.append(document.createTextNode(topicNames[topic]), value);
+    group.append(heading);
+    const pages = slides.filter(slide => topicOf(slide) === topic).map(slide => {
+      const line = document.createElement('div');
+      const time = document.createElement('span');
+      line.className = 'clock-page-row';
+      line.append(document.createTextNode(pageNames[slide.id]), time);
+      group.append(line);
+      return { id: slide.id, time };
+    });
+    document.querySelector('#clock-breakdown').append(group);
+    return { topic, value, pages };
+  });
+
+  function settle() {
+    const now = Date.now();
+    if (running) durations[active] += Math.max(0, now - checkpoint);
+    checkpoint = now;
+  }
+  try {
+    const stored = JSON.parse(sessionStorage.getItem(storageKey));
+    if (stored && Object.hasOwn(durations, stored.active)) {
+      for (const id of Object.keys(durations)) {
+        const value = stored.durations?.[id];
+        if (Number.isFinite(value) && value >= 0) durations[id] = value;
+      }
+      active = stored.active;
+      running = stored.running === true;
+      if (Number.isFinite(stored.checkpoint)) checkpoint = stored.checkpoint;
+      settle();
+    }
+  } catch { /* Storage may be unavailable in private browsing. */ }
+
+  function persist() {
+    try { sessionStorage.setItem(storageKey, JSON.stringify({ durations, active, running, checkpoint })); } catch { /* Keep the clock usable without storage. */ }
+  }
+  function format(milliseconds) {
+    const seconds = Math.floor(milliseconds / 1000);
+    const parts = [Math.floor(seconds / 60) % 60, seconds % 60];
+    if (seconds >= 3600) parts.unshift(Math.floor(seconds / 3600));
+    return parts.map(value => String(value).padStart(2, '0')).join(':');
+  }
+  function render() {
+    const slide = slides.find(item => item.id === active);
+    const topic = topicOf(slide);
+    const total = Object.values(durations).reduce((sum, value) => sum + value, 0);
+    const topicTotal = slides.filter(item => topicOf(item) === topic).reduce((sum, item) => sum + durations[item.id], 0);
+    document.querySelector('#page-time').textContent = format(durations[active]);
+    document.querySelector('#page-time').setAttribute('aria-label', `Tempo em ${pageNames[active]}: ${format(durations[active])}`);
+    document.querySelector('#topic-time-label').textContent = slide.dataset.pauta ? `Pauta ${slide.dataset.pauta}` : topicNames[topic];
+    document.querySelector('#topic-time').textContent = format(topicTotal);
+    document.querySelector('#meeting-time').textContent = format(total);
+    groups.forEach(group => {
+      group.value.textContent = format(group.pages.reduce((sum, page) => sum + durations[page.id], 0));
+      group.pages.forEach(page => { page.time.textContent = format(durations[page.id]); });
+    });
+    toggle.textContent = running ? 'Pausar' : total > 0 ? 'Retomar' : 'Iniciar';
+    toggle.setAttribute('aria-label', `${toggle.textContent} cronômetro da reunião`);
+    reset.disabled = total === 0 && !running;
+    clock.classList.toggle('is-running', running);
+    const message = running ? 'Em andamento' : total > 0 ? 'Pausado' : 'Pronto para iniciar';
+    if (status.textContent !== message) status.textContent = message;
+  }
+  function start() {
+    if (running) return;
+    checkpoint = Date.now();
+    running = true;
+    render();
+    persist();
+  }
+  toggle.addEventListener('click', () => {
+    if (!running) { start(); return; }
+    settle();
+    running = false;
+    render();
+    persist();
+  });
+  reset.addEventListener('click', () => {
+    running = false;
+    Object.keys(durations).forEach(id => { durations[id] = 0; });
+    checkpoint = Date.now();
+    render();
+    persist();
+  });
+  window.setInterval(() => {
+    if (!running) return;
+    settle();
+    render();
+    persist();
+  }, 1000);
+  window.addEventListener('pagehide', () => { settle(); persist(); });
+  window.addEventListener('pageshow', () => { settle(); render(); persist(); });
+  document.addEventListener('click', event => {
+    if (!summary.contains(event.target)) summary.open = false;
+  });
+  render();
+  return {
+    start,
+    changePage(slide) {
+      settle();
+      active = slide.id;
+      summary.open = false;
+      render();
+      persist();
+    }
+  };
+}
+const meetingClock = createMeetingClock();
+
 function fitPresentation() {
   if (!document.body.classList.contains('presentation-mode')) {
     slides.forEach(item => { item.style.transform = ''; item.style.top = ''; item.style.width = ''; item.style.left = ''; });
@@ -27,6 +154,7 @@ function fitPresentation() {
 
 function showSlide(index, moveFocus = false) {
   current = Math.min(Math.max(index, 0), slides.length - 1);
+  meetingClock.changePage(slides[current]);
   slides.forEach((slide, i) => { slide.hidden = i !== current; });
   links.forEach((link, i) => {
     link.classList.toggle('active', i === current);
@@ -98,7 +226,7 @@ function setPresentation(enabled) {
 
 previous.addEventListener('click', () => navigate(current - 1));
 next.addEventListener('click', () => navigate(current + 1));
-document.querySelector('#begin').addEventListener('click', () => navigate(1));
+document.querySelector('#begin').addEventListener('click', () => { navigate(1); meetingClock.start(); });
 modeToggle.addEventListener('click', () => setPresentation(!document.body.classList.contains('presentation-mode')));
 agendaToggle.addEventListener('click', () => document.body.classList.contains('menu-open') ? closeAgenda(true) : openAgenda());
 agendaClose.addEventListener('click', () => closeAgenda(true));
@@ -116,7 +244,9 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
 });
 document.addEventListener('keydown', event => {
   if (event.key === 'Escape') {
-    if (document.body.classList.contains('menu-open')) closeAgenda(true);
+    const clockSummary = document.querySelector('#clock-summary');
+    if (clockSummary.open) { clockSummary.open = false; clockSummary.querySelector('summary').focus(); }
+    else if (document.body.classList.contains('menu-open')) closeAgenda(true);
     else if (document.body.classList.contains('presentation-mode')) setPresentation(false);
     return;
   }
