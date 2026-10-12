@@ -239,11 +239,6 @@ function setPresentation(enabled) {
 previous.addEventListener('click', () => navigate(current - 1));
 next.addEventListener('click', () => navigate(current + 1));
 document.querySelector('#begin').addEventListener('click', () => { navigate(1); meetingClock.start(); });
-document.querySelector('#back-to-posse').addEventListener('click', () => {
-  const heading = document.querySelector('#title-1');
-  heading.scrollIntoView({ block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
-  heading.focus({ preventScroll: true });
-});
 modeToggle.addEventListener('click', () => setPresentation(!document.body.classList.contains('presentation-mode')));
 agendaToggle.addEventListener('click', () => document.body.classList.contains('menu-open') ? closeAgenda(true) : openAgenda());
 agendaClose.addEventListener('click', () => closeAgenda(true));
