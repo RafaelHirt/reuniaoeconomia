@@ -143,6 +143,13 @@ function fitPresentation() {
   }
   const stage = document.querySelector('#presentation');
   const slide = slides[current];
+  if (slide.classList.contains('scrollable-slide')) {
+    slide.style.width = `${Math.min(1320, stage.clientWidth)}px`;
+    slide.style.transform = '';
+    slide.style.left = `${Math.max(0, (stage.clientWidth - slide.offsetWidth) / 2)}px`;
+    slide.style.top = '0';
+    return;
+  }
   slide.style.width = `${Math.min(1320, Math.max(stage.clientWidth, stage.clientWidth < 620 ? 800 : 0))}px`;
   slide.style.transform = '';
   const scale = Math.min(1, stage.clientWidth / slide.offsetWidth, stage.clientHeight / slide.offsetHeight);
@@ -175,6 +182,7 @@ function showSlide(index, moveFocus = false) {
   document.title = `${slides[current].querySelector('h1').textContent.replace(/\s+/g, ' ').trim()} • SES-GO`;
   fitPresentation();
   if (moveFocus) {
+    slides[current].scrollTop = 0;
     const heading = slides[current].querySelector('h1');
     heading.setAttribute('tabindex', '-1');
     heading.focus({ preventScroll: true });
@@ -227,6 +235,18 @@ function setPresentation(enabled) {
 previous.addEventListener('click', () => navigate(current - 1));
 next.addEventListener('click', () => navigate(current + 1));
 document.querySelector('#begin').addEventListener('click', () => { navigate(1); meetingClock.start(); });
+document.querySelector('#view-expanded-units').addEventListener('click', () => {
+  const heading = document.querySelector('#expanded-units-title');
+  heading.scrollIntoView({ block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
+  heading.focus({ preventScroll: true });
+});
+document.querySelector('#back-to-posse').addEventListener('click', () => {
+  const heading = slides[1].querySelector('h1');
+  const behavior = matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth';
+  if (document.body.classList.contains('presentation-mode')) slides[1].scrollTo({ top: 0, behavior });
+  else heading.scrollIntoView({ block: 'start', behavior });
+  heading.focus({ preventScroll: true });
+});
 modeToggle.addEventListener('click', () => setPresentation(!document.body.classList.contains('presentation-mode')));
 agendaToggle.addEventListener('click', () => document.body.classList.contains('menu-open') ? closeAgenda(true) : openAgenda());
 agendaClose.addEventListener('click', () => closeAgenda(true));
@@ -260,6 +280,7 @@ document.addEventListener('keydown', event => {
     return;
   }
   if (event.altKey || event.ctrlKey || event.metaKey || ['INPUT', 'TEXTAREA', 'SELECT'].includes(event.target.tagName)) return;
+  if (event.target.closest('.units-table-scroll')) return;
   if (['ArrowRight', 'PageDown'].includes(event.key)) { event.preventDefault(); navigate(current + 1); }
   if (['ArrowLeft', 'PageUp'].includes(event.key)) { event.preventDefault(); navigate(current - 1); }
   if (event.key === 'Home') { event.preventDefault(); navigate(0); }
