@@ -135,6 +135,28 @@ function createMeetingClock() {
   };
 }
 const meetingClock = createMeetingClock();
+const posse = document.querySelector('#posse');
+const posseViewButtons = [...document.querySelectorAll('[data-posse-view]')];
+const unitsGroupButtons = [...document.querySelectorAll('[data-units-group]')];
+
+function setPosseView(view, moveFocus = false) {
+  posse.dataset.view = view;
+  posseViewButtons.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.posseView === view)));
+  const heading = document.querySelector(view === 'units' ? '#expanded-units-title' : '#title-1');
+  if (document.body.classList.contains('presentation-mode')) fitPresentation();
+  else if (moveFocus) heading.scrollIntoView({ block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
+  if (moveFocus) heading.focus({ preventScroll: true });
+}
+
+function setUnitsGroup(group) {
+  unitsGroupButtons.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.unitsGroup === group)));
+  document.querySelectorAll('.units-group').forEach(panel => panel.classList.toggle('is-active', panel.id === `units-${group}`));
+  const number = unitsGroupButtons.findIndex(button => button.dataset.unitsGroup === group) + 1;
+  const counter = document.querySelector('#units-group-counter');
+  counter.textContent = `${String(number).padStart(2, '0')} / 03`;
+  counter.setAttribute('aria-label', `Grupo ${number} de 3`);
+  fitPresentation();
+}
 
 function fitPresentation() {
   if (!document.body.classList.contains('presentation-mode')) {
@@ -143,14 +165,8 @@ function fitPresentation() {
   }
   const stage = document.querySelector('#presentation');
   const slide = slides[current];
-  if (slide.classList.contains('scrollable-slide')) {
-    slide.style.width = `${Math.min(1320, stage.clientWidth)}px`;
-    slide.style.transform = '';
-    slide.style.left = `${Math.max(0, (stage.clientWidth - slide.offsetWidth) / 2)}px`;
-    slide.style.top = '0';
-    return;
-  }
-  slide.style.width = `${Math.min(1320, Math.max(stage.clientWidth, stage.clientWidth < 620 ? 800 : 0))}px`;
+  const minimumWidth = slide === posse && posse.dataset.view === 'units' ? 1100 : stage.clientWidth < 620 ? 800 : 0;
+  slide.style.width = `${Math.min(1320, Math.max(stage.clientWidth, minimumWidth))}px`;
   slide.style.transform = '';
   const scale = Math.min(1, stage.clientWidth / slide.offsetWidth, stage.clientHeight / slide.offsetHeight);
   slide.style.transformOrigin = 'top left';
@@ -160,7 +176,9 @@ function fitPresentation() {
 }
 
 function showSlide(index, moveFocus = false) {
+  const oldIndex = current;
   current = Math.min(Math.max(index, 0), slides.length - 1);
+  if (current !== oldIndex && slides[current] === posse) setPosseView('citation');
   meetingClock.changePage(slides[current]);
   slides.forEach((slide, i) => { slide.hidden = i !== current; });
   links.forEach((link, i) => {
@@ -183,7 +201,8 @@ function showSlide(index, moveFocus = false) {
   fitPresentation();
   if (moveFocus) {
     slides[current].scrollTop = 0;
-    const heading = slides[current].querySelector('h1');
+    const heading = slides[current] === posse && posse.dataset.view === 'units' && document.body.classList.contains('presentation-mode')
+      ? document.querySelector('#expanded-units-title') : slides[current].querySelector('h1');
     heading.setAttribute('tabindex', '-1');
     heading.focus({ preventScroll: true });
     window.scrollTo({ top: 0, behavior: 'instant' });
@@ -236,17 +255,13 @@ previous.addEventListener('click', () => navigate(current - 1));
 next.addEventListener('click', () => navigate(current + 1));
 document.querySelector('#begin').addEventListener('click', () => { navigate(1); meetingClock.start(); });
 document.querySelector('#view-expanded-units').addEventListener('click', () => {
-  const heading = document.querySelector('#expanded-units-title');
-  heading.scrollIntoView({ block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
-  heading.focus({ preventScroll: true });
+  setPosseView('units', true);
 });
 document.querySelector('#back-to-posse').addEventListener('click', () => {
-  const heading = slides[1].querySelector('h1');
-  const behavior = matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth';
-  if (document.body.classList.contains('presentation-mode')) slides[1].scrollTo({ top: 0, behavior });
-  else heading.scrollIntoView({ block: 'start', behavior });
-  heading.focus({ preventScroll: true });
+  setPosseView('citation', true);
 });
+posseViewButtons.forEach(button => button.addEventListener('click', () => setPosseView(button.dataset.posseView, true)));
+unitsGroupButtons.forEach(button => button.addEventListener('click', () => setUnitsGroup(button.dataset.unitsGroup)));
 modeToggle.addEventListener('click', () => setPresentation(!document.body.classList.contains('presentation-mode')));
 agendaToggle.addEventListener('click', () => document.body.classList.contains('menu-open') ? closeAgenda(true) : openAgenda());
 agendaClose.addEventListener('click', () => closeAgenda(true));
