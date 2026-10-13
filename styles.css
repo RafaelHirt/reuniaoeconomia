@@ -352,3 +352,19 @@ blockquote p:last-child{margin-bottom:0}
  .presentation-mode.document-slide #posse .citation-text p{font-size:19px}
 }
 @media screen{.presentation-mode.document-slide .workspace{overflow-anchor:none}}
+
+#units-implanted .unit-name-col{width:13%}
+#units-implanted .unit-increment-col{width:31%}
+.unit-increment .unit-to-open{background:#faf1d8;color:#715716}
+.units-table tfoot th,.units-table tfoot .unit-amount{background:#e7eedf;color:var(--green);font-weight:600;border-top:2px solid #c4d3b8;border-bottom:0;padding-top:14px;padding-bottom:14px}
+.units-table tfoot th{font-size:12px}
+.units-table tfoot .unit-amount{font-size:13px}
+@media print{.units-table tfoot th,.units-table tfoot .unit-amount{font-size:8px;padding:5px 8px;-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+@media print{
+ #posse .expanded-units{break-inside:auto}
+ #posse .units-card{display:block}
+ #posse .units-group{break-inside:avoid}
+ #posse .units-group+.units-group{margin-top:8px}
+ #units-increment{break-before:page}
+ #posse .units-total{margin-top:8px;break-inside:avoid}
+}
