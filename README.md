@@ -1,6 +1,6 @@
 # Reunião SES-GO / Economia
 
-Apresentação web por tópicos, preparada para importar no Netlify a partir deste repositório. Site estático, sem dependências externas ou credenciais.
+Apresentação web sobre o custeio mensal de seis policlínicas, preparada para importar no Netlify. Site estático, sem dependências externas ou credenciais.
 
 ## Desenvolvimento
 
@@ -10,42 +10,47 @@ Use Node.js 24 (ou versão >= 20).
 npm run dev
 ```
 
-Servidor na porta 5173. Navegue pelo menu, pelas setas da tela ou pelas teclas ← / →. Home e End levam à primeira e à última tela. As setas do navegador preservam o histórico de telas; a troca de unidade volta ao início do texto e mantém o item selecionado visível no menu do celular. O botão **Imprimir / PDF** inclui as sete telas; **Tela cheia** ativa o modo de apresentação quando suportado pelo navegador.
+Servidor na porta 5173. A apresentação tem três telas: abertura, comparativo mensal e encerramento. A capa preserva a identidade visual Saúde & Economia, com verde, amarelo e a logo oficial da SES-GO.
+
+Navegue pelo menu, pelas setas da tela ou pelas teclas ← / →. Home e End levam à primeira e à última tela. O histórico do navegador preserva a navegação. No computador, a abertura usa modo apresentação, com uma tela por vez ajustada à janela. **Pautas** abre o menu; **Modo leitura** restaura a navegação lateral e os textos no tamanho normal. **Esc** fecha o menu ou volta ao modo leitura. No celular, a abertura usa modo leitura e a tabela permite rolagem horizontal, mantendo a coluna da unidade visível. Quando o foco está na tabela, as setas permitem percorrê-la sem mudar de tela.
+
+**Imprimir / PDF** inclui as três telas em A4 paisagem, com a tabela completa na página central. **Tela cheia** ativa o modo de apresentação quando suportado pelo navegador.
+
 
 ```sh
 npm run build
 npm run preview
 ```
 
-No computador, a apresentação abre em **modo apresentação**, com uma tela por vez ajustada à janela. O botão **Pautas** abre o menu, **Modo leitura** restaura a navegação lateral e o tamanho normal dos textos, e **Esc** fecha o menu ou volta ao modo leitura. O rodapé oferece acesso direto às pautas I, II e III. O menu de pautas fecha pelo botão, pelo fundo ou por Esc e mantém o foco de teclado dentro do menu enquanto aberto. No modo apresentação, os dois trechos SLMB ficam lado a lado; no modo leitura, no celular e no PDF, são sequenciais. O modo apresentação funciona também sem tela cheia. No celular, a abertura padrão usa modo leitura para manter o texto legível; o botão Apresentar também está disponível.
+O build gera `dist/` com os arquivos estáticos. Os scripts usam módulos nativos do Node.js e não exigem instalação de pacotes.
 
-O cronômetro exibe o tempo acumulado da página atual, da pauta e da reunião. **Iniciar** começa a contagem; **Pausar** congela todas as contagens e **Retomar** continua. **Iniciar apresentação** também inicia o cronômetro. A troca de página atribui o tempo à página visível, e revisitas acumulam o tempo anterior. **Resumo** mostra todas as páginas e pautas; **Zerar** limpa tudo e pausa. A abertura e o encerramento têm contagens próprias e entram no total da reunião. O estado é guardado apenas na sessão da aba, inclusive após recarregar; não há envio de dados. Enquanto em andamento, conta também o tempo com a aba em segundo plano. Os controles e tempos não aparecem no PDF.
+## Conteúdo
 
-O build gera `dist/`. Não há instalação de pacotes: todos os scripts usam módulos nativos do Node.js.
+O comparativo reproduz os valores das imagens fornecidas para Formosa, Goianésia, Goiás, Posse, Quirinópolis e SLMB. As colunas são Unidade, Custeio atual, Custeio LOA 2027, Custeio mensal no aditivo — 1ª fase e Diferença — 1ª fase.
+
+A diferença corresponde a **custeio mensal no aditivo menos custeio LOA 2027**, calculada por unidade e no total. Todos os valores são mensais, em reais; não há anualização.
+
+| Unidade | Custeio atual | Custeio LOA 2027 | Aditivo — 1ª fase | Diferença — 1ª fase |
+| --- | ---: | ---: | ---: | ---: |
+| P. Formosa | R$ 2.401.345,13 | R$ 1.908.333,33 | R$ 2.058.789,40 | R$ 150.456,07 |
+| P. Goianésia | R$ 2.280.862,07 | R$ 1.875.000,00 | R$ 1.958.267,82 | R$ 83.267,82 |
+| P. Goiás | R$ 2.677.633,67 | R$ 1.983.333,33 | R$ 2.093.186,93 | R$ 109.853,60 |
+| P. Posse | R$ 3.069.301,80 | R$ 2.341.666,67 | R$ 2.627.874,89 | R$ 286.208,22 |
+| P. Quirinópolis | R$ 2.327.041,25 | R$ 1.933.333,33 | R$ 2.088.387,67 | R$ 155.054,34 |
+| P. SLMB | R$ 1.966.844,75 | R$ 1.791.666,67 | R$ 1.860.858,34 | R$ 69.191,67 |
+| **Total** | **R$ 14.723.028,67** | **R$ 11.833.333,33** | **R$ 12.687.365,05** | **R$ 854.031,72** |
+
+Os valores foram transcritos das imagens desta solicitação. A planilha `unidades ampliadas.xlsx`, disponível nos anexos do ambiente, trata da pauta anterior e não é a fonte deste comparativo.
 
 ## Importar no Netlify
 
 1. No Netlify, importe o repositório `RafaelHirt/reuniaoeconomia` do GitHub.
 2. Selecione a branch `main` e mantenha o diretório base na raiz.
 3. Use **Build command:** `npm run build` e **Publish directory:** `dist`.
-4. Publique. O arquivo `netlify.toml` já registra esses parâmetros, a versão do Node e os cabeçalhos HTTP.
+4. Publique. `netlify.toml` já registra esses parâmetros, a versão do Node e os cabeçalhos HTTP.
 
-Não são necessárias variáveis de ambiente. A publicação no Netlify será feita pelo proprietário do site.
+Não são necessárias variáveis de ambiente para o site. O Netlify publica os arquivos de `dist/` após o build da branch configurada.
 
-## Conteúdo
+Edite os textos e valores em `index.html`, os estilos em `styles.css` e a navegação em `app.js`.
 
-- Abertura e pauta.
-- Pauta I — Condicionantes: textos fornecidos do Despacho da Economia, agrupados por PC Posse, PC SLMB e HEF, sem gráficos ou análises adicionais. Em PC Posse, as tabelas ficam abaixo da citação e reproduzem os três grupos, oito unidades, subtotais e total da planilha fornecida: unidades implantadas e a implantar (CORA, HEAL e PC Mozarlândia), com incremento de serviços/leitos (HETRIN, HEANA, HEF e HUGOL) e com previsão de ampliação em 2027 (HUGO). A nota do HEF informa que o valor de R$ 8.293.792,74 será aplicado após a assinatura do Termo Aditivo. Os cabeçalhos indicam diferença mensal e diferença no exercício. Em PC Posse, a citação e as três tabelas ficam sempre visíveis em sequência, inclusive no modo apresentação. A página usa rolagem normal da janela, com os controles de tempo e navegação acessíveis, sem uma caixa de rolagem vertical dentro do conteúdo. Em PC Posse, Page Up/Down, Home e End percorrem a página; ← e → continuam mudando de tela. O total exibido abrange os três grupos. No celular, as tabelas mantêm suas colunas com rolagem horizontal. No PDF, PC Posse ocupa duas páginas: a primeira reúne citação e unidades implantadas/a implantar; a segunda reúne incrementos, ampliação em 2027 e total geral.
-- Pauta II — Aditivos em tramitação na Economia: Rede HEMO (SEI nº 202600010051458, manifestação SEAD com check) e PC SLMB (despacho técnico de 29/09/2026, pendente GAB/Economia).
-- Pauta III — Prazo de análises: datas de envio do ofício, manifestação SEAD, área técnica Economia, diligências e manifestação Economia. Intervalos em dias corridos, sem contar o dia inicial. Ordenação pelo total de dias na Economia, do maior para o menor: CRESM 53, HEF 48, HUGOL 39 e PC de Goianésia 28 dias. Os intervalos SEAD → área técnica são 53, 28, 28 e 17 dias, respectivamente.
-- Total de dias na Economia, conforme os intervalos definidos para a reunião: (SEAD → área técnica) + (ofício de diligências → manifestação Economia). CRESM 53 + 0 = 53, Goianésia 17 + 11 = 28, HUGOL 28 + 11 = 39 e HEF 28 + 20 = 48 dias. No CRESM não houve diligências nem manifestação posterior da Economia. O tempo anterior à SEAD e o intervalo entre área técnica e ofício de diligências não compõem essa soma.
-- HUGOL aparece primeiro na tabela de incremento de serviços/leitos. Incremento do HUGOL: previsão da UTI Neurológica e incremento de cirurgias. Valor anterior R$ 32.953.708,89; atual R$ 36.664.844,00; diferença mensal R$ 3.711.135,11 e diferença no exercício R$ 44.533.621,32 (12 meses). O total dos três grupos passa a R$ 392.813.764,20.
-- PC Mozarlândia: chamamento público em tramitação. Valor atual informado de R$ 1.812.916,08; previsão para 12 meses de R$ 21.754.992,96. Os subtotais somam cada coluna numérica informada; os campos sem valor permanecem como traço. Subtotais no exercício: implantadas e a implantar R$ 205.725.427,08; incremento de serviços/leitos R$ 134.226.752,16; ampliação em 2027 R$ 52.861.584,96.
-- HUGO: valor atual R$ 25.594.867,92; previsto para 2027 R$ 30.000.000,00. Diferença mensal R$ 4.405.132,08 e no exercício R$ 52.861.584,96 (12 meses).
-- Encerramento: Obrigado, com a logo oficial clara sobre verde.
-
-Os valores, prazos e referências SEI foram fornecidos para a reunião, sem consulta independente aos documentos. A data de 29/09/2026 e a manifestação da Rede HEMO foram informadas pelo usuário. Os textos das condicionantes são reproduzidos a partir do conteúdo fornecido, em itálico e entre aspas, com os números SEI em etiquetas separadas, sem repetir o nome da unidade.
-
-A identidade visual usa verde, amarelo e a logo oficial SUS / SES / Estado de Goiás, com variantes oficiais transparentes em `assets/logo-ses-clara.png` e `assets/logo-ses-escura.png`. Fonte: [Sala de Imprensa da SES-GO](https://goias.gov.br/saude/sala-de-imprensa/), arquivo [Bloco_Logo SES.zip](https://goias.gov.br/saude/wp-content/uploads/sites/34/sala-de-imprensa/Bloco_Logo%20SES.zip). A logo é servida localmente, sem depender de acesso ao portal durante o uso da apresentação.
-
-Edite o texto em `index.html`, os estilos em `styles.css` e a navegação em `app.js`.
+As logos oficiais transparentes são servidas localmente em `assets/logo-ses-clara.png` e `assets/logo-ses-escura.png`. Fonte: [Sala de Imprensa da SES-GO](https://goias.gov.br/saude/sala-de-imprensa/), arquivo [Bloco_Logo SES.zip](https://goias.gov.br/saude/wp-content/uploads/sites/34/sala-de-imprensa/Bloco_Logo%20SES.zip).
