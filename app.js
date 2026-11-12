@@ -9,6 +9,51 @@ const agendaClose = document.querySelector('#agenda-close');
 const backdrop = document.querySelector('#menu-backdrop');
 let current = 0;
 
+function initializeCostComparison() {
+  const fields = {
+    atual: { column: 1, label: 'Custeio atual', short: 'Atual' },
+    loa: { column: 2, label: 'Custeio LOA 2027', short: 'LOA 2027' },
+    aditivo: { column: 3, label: 'Custeio mensal no aditivo — 1ª fase', short: 'Aditivo' }
+  };
+  const first = document.querySelector('#cost-first');
+  const second = document.querySelector('#cost-second');
+  const format = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+  // Read the displayed source amounts once and calculate in whole cents.
+  const rows = [...document.querySelectorAll('.cost-table tbody tr')].map(row => ({
+    row,
+    cents: Object.fromEntries(Object.entries(fields).map(([key, field]) => [
+      key, Number(row.cells[field.column].textContent.replace(/[^\d-]/g, ''))
+    ]))
+  }));
+
+  function render() {
+    let total = 0;
+    rows.forEach(({ row, cents }) => {
+      const difference = cents[first.value] - cents[second.value];
+      row.cells[4].textContent = format.format(difference / 100);
+      total += difference;
+    });
+    const formula = `${fields[first.value].label} − ${fields[second.value].label}`;
+    document.querySelector('#cost-difference-formula').textContent = `${fields[first.value].short} − ${fields[second.value].short}`;
+    document.querySelector('#cost-formula').textContent = formula;
+    document.querySelector('#cost-caption').textContent = `Valores mensais em reais, com total de cada coluna. Diferença mensal: ${formula}.`;
+    document.querySelector('.cost-table tfoot td:last-child').textContent = format.format(total / 100);
+    document.querySelector('#cost-total').textContent = format.format(total / 100);
+    fitPresentation();
+  }
+
+  first.addEventListener('change', render);
+  second.addEventListener('change', render);
+  document.querySelector('#cost-invert').addEventListener('click', () => {
+    const firstKey = first.value;
+    first.value = second.value;
+    second.value = firstKey;
+    render();
+  });
+  document.querySelector('.cost-comparison').hidden = false;
+  render();
+}
+
 function fitPresentation() {
   const presenting = document.body.classList.contains('presentation-mode');
   if (!presenting) {
@@ -136,7 +181,7 @@ document.addEventListener('keydown', event => {
     return;
   }
   if (event.altKey || event.ctrlKey || event.metaKey || ['INPUT', 'TEXTAREA', 'SELECT'].includes(event.target.tagName)) return;
-  if (event.target.closest('.cost-table-scroll')) return;
+  if (event.target.closest('.cost-table-scroll, .cost-comparison')) return;
   if (['ArrowRight', 'PageDown'].includes(event.key)) { event.preventDefault(); navigate(current + 1); }
   if (['ArrowLeft', 'PageUp'].includes(event.key)) { event.preventDefault(); navigate(current - 1); }
   if (event.key === 'Home') { event.preventDefault(); navigate(0); }
@@ -165,5 +210,6 @@ window.addEventListener('load', () => {
   setTimeout(() => window.scrollTo({ top: 0, behavior: 'instant' }), 0);
 });
 document.querySelectorAll('img').forEach(img => img.addEventListener('load', fitPresentation));
+initializeCostComparison();
 setPresentation(matchMedia('(min-width: 901px)').matches);
 syncHash();

@@ -335,8 +335,17 @@ blockquote p:last-child{margin-bottom:0}
 /* Monthly funding comparison supplied for this meeting. */
 .agenda-scope{padding:24px 27px 27px}
 .agenda-scope>span{font-size:9px;letter-spacing:1.4px;color:var(--green-light);font-weight:600}
-.agenda-scope p{font-size:14px;line-height:1.9;color:var(--ink);margin:10px 0 18px}
-.agenda-note{border-left:2px solid var(--yellow);padding-left:13px;font-size:12px;line-height:1.8;color:var(--muted)}
+.agenda-scope p{font-size:14px;line-height:1.9;color:var(--ink);margin:10px 0 0}
+.cost-comparison{min-width:0;margin:16px 0 20px;padding:0;border:0}
+.cost-comparison legend{padding:0;margin-bottom:8px;font-size:11px;font-weight:600;color:var(--green)}
+.cost-comparison-fields{display:grid;grid-template-columns:minmax(0,1fr) 24px minmax(0,1fr) auto;align-items:end;gap:12px}
+.cost-select-label{display:grid;gap:5px;min-width:0;font-size:10px;color:var(--muted)}
+.cost-select-label select{width:100%;min-width:0;min-height:42px;padding:9px 12px;border:1px solid #cad6bf;border-radius:8px;background:var(--white);color:var(--green);font:inherit;font-size:13px;cursor:pointer}
+.cost-select-label select:focus-visible{outline:3px solid var(--yellow);outline-offset:3px}
+.cost-minus{text-align:center;font-size:24px;line-height:42px;color:var(--green-light)}
+.cost-invert{display:flex;align-items:center;justify-content:center;gap:8px;min-height:42px;padding:9px 14px;border:1px solid #cad6bf;border-radius:8px;background:transparent;color:var(--green);font-size:12px;white-space:nowrap}
+.cost-invert:hover{background:#e9eee3}.cost-invert>span{font-size:20px;line-height:1}
+#cost-comparison-hint{font-size:10px;line-height:1.5;color:var(--muted);margin:8px 0 0}
 .cost-table-scroll{overflow-x:auto;overscroll-behavior-x:contain;border:1px solid #d6dfcd;border-radius:14px;background:var(--white)}
 .cost-table-scroll:focus-visible{outline:3px solid var(--yellow);outline-offset:4px}
 .cost-table{border-collapse:collapse;table-layout:fixed;width:100%;min-width:990px;text-align:left;font-size:17px;font-variant-numeric:tabular-nums}
@@ -351,6 +360,7 @@ blockquote p:last-child{margin-bottom:0}
 .cost-table tr>*:last-child{background:#f5f0df;border-left:1px solid #e4dcc1;color:var(--green);font-weight:600}
 .cost-table tfoot th,.cost-table tfoot td{background:var(--green);color:white;border-top:2px solid var(--yellow);border-bottom:0;font-weight:600;padding-top:20px;padding-bottom:20px}
 .cost-table tfoot tr>*:last-child{background:#24533f;color:#f3d788;border-left-color:#ffffff24}
+#cost-difference-formula{font-weight:500}
 .cost-summary{display:flex;justify-content:space-between;align-items:center;gap:24px;margin-top:22px;padding:22px 24px;border:1px solid #d7dfc9;border-left:4px solid var(--yellow);border-radius:12px;background:#edf2e5}
 .cost-summary-label{font-size:10px;font-weight:600;letter-spacing:1.2px;color:var(--green-light)}
 .cost-summary p{font-size:12px;color:var(--muted);margin:6px 0 0}
@@ -364,6 +374,7 @@ blockquote p:last-child{margin-bottom:0}
  .cost-table tfoot th{background:var(--green)}
  .presentation-mode .cost-table{min-width:0}
  .presentation-mode .cost-table-scroll{overflow:visible}
+ .presentation-mode .cost-table th,.presentation-mode .cost-table td{padding-top:12px;padding-bottom:12px}
 }
 @media screen and (max-width:1400px){
  .cost-table th,.cost-table td{padding-left:15px;padding-right:15px}
@@ -375,13 +386,21 @@ blockquote p:last-child{margin-bottom:0}
 @media screen and (max-width:1100px){.presentation-mode .cost-table{font-size:14px}.presentation-mode .cost-table th,.presentation-mode .cost-table td{padding-left:10px;padding-right:10px}.presentation-mode .cost-table tbody th{font-size:13px}}
 @media screen and (max-width:620px){
  .agenda-scope{padding:22px}.agenda-scope p{font-size:13px}
+ body:not(.presentation-mode) .cost-comparison-fields{grid-template-columns:1fr;gap:10px}
+ body:not(.presentation-mode) .cost-minus{display:none}
+ body:not(.presentation-mode) .cost-invert{justify-self:start}
+ body:not(.presentation-mode) .cost-select-label select{font-size:14px;min-height:44px}
+ .presentation-mode .cost-comparison-fields{gap:8px}
+ .presentation-mode .cost-select-label select{font-size:11px;padding-left:8px}
+ .presentation-mode .cost-invert{padding-left:10px;padding-right:10px}
  .cost-summary{align-items:flex-start;flex-direction:column;gap:10px;padding:18px 20px}
  .cost-summary-label{font-size:9px;letter-spacing:.7px}.cost-summary strong{font-size:30px}.cost-summary p{font-size:11px}
  .presentation-mode .cost-summary{align-items:center;flex-direction:row}
  .presentation-mode .cost-table th,.presentation-mode .cost-table td{padding-left:8px;padding-right:8px}
 }
 @media print{
- .agenda-scope{padding:20px 22px}.agenda-scope p{font-size:12px}.agenda-note{font-size:10px}
+ .agenda-scope{padding:20px 22px}.agenda-scope p{font-size:12px}
+ .cost-comparison{display:none}
  .cost-table-scroll{overflow:visible;border-radius:10px}
  .cost-table{min-width:0;width:100%;font-size:14px}
  .cost-table th,.cost-table td{padding:13px 12px}
