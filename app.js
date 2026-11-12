@@ -11,8 +11,8 @@ let current = 0;
 
 function initializeCostComparison() {
   const fields = {
-    atual: { column: 1, label: 'Custeio atual', short: 'Atual' },
-    loa: { column: 2, label: 'Custeio LOA 2027', short: 'LOA 2027' },
+    atual: { column: 1, label: 'Custeio Mensal Atual', short: 'Atual' },
+    loa: { column: 2, label: 'Custeio Mensal LOA 2027', short: 'LOA 2027' },
     aditivo: { column: 3, label: 'Custeio mensal no aditivo — 1ª fase', short: 'Aditivo' }
   };
   const first = document.querySelector('#cost-first');

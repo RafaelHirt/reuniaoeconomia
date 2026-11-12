@@ -33,7 +33,7 @@
           <div><span class="pill">PAUTA DA REUNIÃO</span><h1 id="title-0">Saúde &amp;<br><em>Economia.</em></h1><p class="cover-description">Custeio das policlínicas: valores atuais,<br class="desktop"> LOA 2027 e aditivo — 1ª fase.</p><button class="primary" id="begin">Iniciar apresentação <span aria-hidden="true">→</span></button></div>
           <div class="agenda-panel">
             <div class="panel-heading">Nesta apresentação <span>06 UNIDADES</span></div>
-            <a href="#comparativo"><span class="agenda-number">I</span><div><h2>Comparativo de custeio mensal</h2><p>Custeio atual · LOA 2027 · Aditivo — 1ª fase</p></div><span aria-hidden="true">→</span></a>
+            <a href="#comparativo"><span class="agenda-number">I</span><div><h2>Comparativo de custeio mensal</h2><p>Custeio Mensal Atual · LOA 2027 · Aditivo — 1ª fase</p></div><span aria-hidden="true">→</span></a>
             <div class="agenda-scope"><span>POLICLÍNICAS</span><p>Formosa · Goianésia · Goiás<br>Posse · Quirinópolis · SLMB</p></div>
           </div>
         </div>
@@ -42,23 +42,23 @@
       <section class="slide cost-slide" id="comparativo" data-pauta="I" aria-labelledby="title-1" hidden>
         <div class="eyebrow">POLICLÍNICAS / CUSTEIO MENSAL</div>
         <h1 id="title-1">Custeio das policlínicas</h1>
-        <p class="subtitle">Custeio atual, LOA 2027 e custeio mensal no aditivo — 1ª fase.</p>
+        <p class="subtitle">Custeio Mensal Atual, LOA 2027 e custeio mensal no aditivo — 1ª fase.</p>
         <fieldset class="cost-comparison" aria-describedby="cost-comparison-hint" hidden>
           <legend>Calcular diferença mensal</legend>
           <div class="cost-comparison-fields">
             <label class="cost-select-label" for="cost-first">Primeiro valor
               <select id="cost-first">
-                <option value="atual" selected>Custeio atual</option>
-                <option value="loa">Custeio LOA 2027</option>
+                <option value="atual" selected>Custeio Mensal Atual</option>
+                <option value="loa">Custeio Mensal LOA 2027</option>
                 <option value="aditivo">Custeio no aditivo — 1ª fase</option>
               </select>
             </label>
             <span class="cost-minus" aria-hidden="true">−</span>
             <label class="cost-select-label" for="cost-second">Subtrair
               <select id="cost-second">
-                <option value="atual">Custeio atual</option>
-                <option value="loa">Custeio LOA 2027</option>
-                <option value="aditivo" selected>Custeio no aditivo — 1ª fase</option>
+                <option value="atual">Custeio Mensal Atual</option>
+                <option value="loa" selected>Custeio Mensal LOA 2027</option>
+                <option value="aditivo">Custeio no aditivo — 1ª fase</option>
               </select>
             </label>
             <button type="button" id="cost-invert" class="cost-invert"><span aria-hidden="true">⇄</span> Inverter ordem</button>
@@ -68,21 +68,21 @@
         <p class="cost-scroll-hint"><span aria-hidden="true">↔</span> Deslize para consultar todas as colunas.</p>
         <div class="cost-table-scroll" role="region" aria-label="Comparativo de custeio das seis policlínicas" tabindex="0">
           <table class="cost-table" aria-describedby="cost-formula">
-            <caption class="sr-only" id="cost-caption">Valores mensais em reais, com total de cada coluna. Diferença mensal: custeio atual menos custeio mensal no aditivo da 1ª fase.</caption>
+            <caption class="sr-only" id="cost-caption">Valores mensais em reais, com total de cada coluna. Diferença mensal: Custeio Mensal Atual menos Custeio Mensal LOA 2027.</caption>
             <colgroup><col class="cost-unit-col"><col span="3" class="cost-amount-col"><col class="cost-difference-col"></colgroup>
-            <thead><tr><th scope="col">Unidade</th><th scope="col">Custeio atual</th><th scope="col">Custeio LOA 2027</th><th scope="col">Custeio mensal no<br>aditivo — 1ª fase</th><th scope="col">Diferença mensal<br><span id="cost-difference-formula">Atual − Aditivo</span></th></tr></thead>
+            <thead><tr><th scope="col">Unidade</th><th scope="col">Custeio Mensal Atual</th><th scope="col">Custeio Mensal LOA 2027</th><th scope="col">Custeio mensal no<br>aditivo — 1ª fase</th><th scope="col">Diferença mensal<br><span id="cost-difference-formula">Atual − LOA 2027</span></th></tr></thead>
             <tbody>
-              <tr><th scope="row">P. Formosa</th><td>R$ 2.401.345,13</td><td>R$ 1.908.333,33</td><td>R$ 2.058.789,40</td><td>R$ 342.555,73</td></tr>
-              <tr><th scope="row">P. Goianésia</th><td>R$ 2.280.862,07</td><td>R$ 1.875.000,00</td><td>R$ 1.958.267,82</td><td>R$ 322.594,25</td></tr>
-              <tr><th scope="row">P. Goiás</th><td>R$ 2.677.633,67</td><td>R$ 1.983.333,33</td><td>R$ 2.093.186,93</td><td>R$ 584.446,74</td></tr>
-              <tr><th scope="row">P. Posse</th><td>R$ 3.069.301,80</td><td>R$ 2.341.666,67</td><td>R$ 2.627.874,89</td><td>R$ 441.426,91</td></tr>
-              <tr><th scope="row">P. Quirinópolis</th><td>R$ 2.327.041,25</td><td>R$ 1.933.333,33</td><td>R$ 2.088.387,67</td><td>R$ 238.653,58</td></tr>
-              <tr><th scope="row">P. SLMB</th><td>R$ 1.966.844,75</td><td>R$ 1.791.666,67</td><td>R$ 1.860.858,34</td><td>R$ 105.986,41</td></tr>
+              <tr><th scope="row">P. Formosa</th><td>R$ 2.401.345,13</td><td>R$ 1.908.333,33</td><td>R$ 2.058.789,40</td><td>R$ 493.011,80</td></tr>
+              <tr><th scope="row">P. Goianésia</th><td>R$ 2.280.862,07</td><td>R$ 1.875.000,00</td><td>R$ 1.958.267,82</td><td>R$ 405.862,07</td></tr>
+              <tr><th scope="row">P. Goiás</th><td>R$ 2.677.633,67</td><td>R$ 1.983.333,33</td><td>R$ 2.093.186,93</td><td>R$ 694.300,34</td></tr>
+              <tr><th scope="row">P. Posse</th><td>R$ 3.069.301,80</td><td>R$ 2.341.666,67</td><td>R$ 2.627.874,89</td><td>R$ 727.635,13</td></tr>
+              <tr><th scope="row">P. Quirinópolis</th><td>R$ 2.327.041,25</td><td>R$ 1.933.333,33</td><td>R$ 2.088.387,67</td><td>R$ 393.707,92</td></tr>
+              <tr><th scope="row">P. SLMB</th><td>R$ 1.966.844,75</td><td>R$ 1.791.666,67</td><td>R$ 1.860.858,34</td><td>R$ 175.178,08</td></tr>
             </tbody>
-            <tfoot><tr><th scope="row">Total</th><td>R$ 14.723.028,67</td><td>R$ 11.833.333,33</td><td>R$ 12.687.365,05</td><td>R$ 2.035.663,62</td></tr></tfoot>
+            <tfoot><tr><th scope="row">Total</th><td>R$ 14.723.028,67</td><td>R$ 11.833.333,33</td><td>R$ 12.687.365,05</td><td>R$ 2.889.695,34</td></tr></tfoot>
           </table>
         </div>
-        <div class="cost-summary" role="status" aria-live="polite" aria-atomic="true"><div><span class="cost-summary-label">DIFERENÇA TOTAL MENSAL</span><p id="cost-formula">Custeio atual − Custeio mensal no aditivo — 1ª fase</p></div><strong id="cost-total">R$ 2.035.663,62</strong></div>
+        <div class="cost-summary" role="status" aria-live="polite" aria-atomic="true"><div><span class="cost-summary-label">DIFERENÇA TOTAL MENSAL</span><p id="cost-formula">Custeio Mensal Atual − Custeio Mensal LOA 2027</p></div><strong id="cost-total">R$ 2.889.695,34</strong></div>
       </section>
       <section class="slide closing-slide" id="encerramento" aria-labelledby="title-2" hidden>
         <div class="closing-card"><span class="closing-kicker">SECRETARIA DE ESTADO DA SAÚDE DE GOIÁS</span><div class="closing-message"><span class="closing-rule" aria-hidden="true"></span><h1 id="title-2">Obrigado.</h1><p>Reunião com a Economia</p></div><img class="closing-logo" src="assets/logo-ses-clara.png" alt="SUS — Secretaria de Estado da Saúde — Estado de Goiás" width="3338" height="675"></div>
