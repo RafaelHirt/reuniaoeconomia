@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { calculateScenario, validMonths, schedule, DP_TOTALS, HEAL } from '../budget.js';
+import { calculateScenario, validMonths, schedule, DP_TOTALS, HEMODIALYSIS_TOTAL, UNITS, HEAL } from '../budget.js';
 
 test('Cenário I mantém a Fase I por 12 meses e preserva os centavos da PLOA', () => {
   const result = calculateScenario([12, 0, 0]);
@@ -44,4 +44,9 @@ test('As datas seguem as fases em ordem e cobrem janeiro a dezembro sem lacunas'
 
 test('HEAL compara o custeio atual com a PLOA na mesma base mensal', () => {
   assert.equal(HEAL.current - HEAL.ploa, 115052543);
+});
+
+test('Hemodiálise reproduz as seis quantidades da planilha e o total', () => {
+  assert.deepEqual(UNITS.map(unit => unit.hemodialysis), [624, 364, 636, 884, 546, 480]);
+  assert.equal(HEMODIALYSIS_TOTAL, 3534);
 });

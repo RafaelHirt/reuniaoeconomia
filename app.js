@@ -1,4 +1,4 @@
-import { UNITS, HEAL, PHASES, DP_TOTALS, SCENARIOS, money, percentage, calculateScenario, schedule, validMonths } from './budget.js';
+import { UNITS, HEAL, PHASES, DP_TOTALS, HEMODIALYSIS_TOTAL, SCENARIOS, money, quantity, percentage, calculateScenario, schedule, validMonths } from './budget.js';
 
 const slides = [...document.querySelectorAll('.slide')];
 const links = [...document.querySelectorAll('.sidebar [data-slide]')];
@@ -33,13 +33,14 @@ function renderScenario(target, result, showMetrics = true, costLabel = 'Termo A
         </div>
       </section>
       <section class="budget-table-card dp-card">
-        <div class="table-card-heading"><h2>DP previstas por fase</h2><span>QUANTIDADE</span></div>
-        <div class="budget-table-scroll" role="region" aria-label="Quantidade de DP prevista em cada fase" tabindex="0">
-          <table class="dp-table"><caption class="sr-only">DP previstas por unidade e fase. A quantidade de cada fase não é multiplicada pelos meses.</caption><colgroup><col class="dp-unit-col"><col span="3"></colgroup><thead><tr><th scope="col">Unidade</th>${PHASES.map((phase, i) => `<th scope="col" class="${result.months[i] ? 'active-phase' : 'inactive-phase'}">${phase}<small>${result.months[i]} ${result.months[i] === 1 ? 'mês' : 'meses'}</small></th>`).join('')}</tr></thead><tbody>${UNITS.map(unit => `<tr><th scope="row">${unit.name}</th>${unit.dp.map((value, i) => `<td class="${result.months[i] ? 'active-phase' : 'inactive-phase'}">${value}</td>`).join('')}</tr>`).join('')}</tbody><tfoot><tr><th scope="row">Total</th>${DP_TOTALS.map((value, i) => `<td class="${result.months[i] ? 'active-phase' : 'inactive-phase'}">${value}</td>`).join('')}</tr></tfoot></table>
+        <div class="table-card-heading"><h2>DP por fase e Hemodiálise</h2><span>QUANTIDADE</span></div>
+        <p class="budget-scroll-hint"><span aria-hidden="true">↔</span> Deslize para ver todas as colunas.</p>
+        <div class="budget-table-scroll" role="region" aria-label="DP por fase e quantidade de Hemodiálise conforme a planilha" tabindex="0">
+          <table class="dp-table"><caption class="sr-only">DP previstas por unidade e fase, com a quantidade de Hemodiálise informada na planilha. Hemodiálise não está discriminada por fase.</caption><colgroup><col class="dp-unit-col"><col span="3" class="dp-phase-col"><col class="hemodialysis-col"></colgroup><thead><tr><th scope="col">Unidade</th>${PHASES.map((phase, i) => `<th scope="col" class="${result.months[i] ? 'active-phase' : 'inactive-phase'}">${phase}<small>${result.months[i]} ${result.months[i] === 1 ? 'mês' : 'meses'}</small></th>`).join('')}<th scope="col" class="hemodialysis-cell">Hemodiálise<small>Planilha</small></th></tr></thead><tbody>${UNITS.map(unit => `<tr><th scope="row">${unit.name}</th>${unit.dp.map((value, i) => `<td class="${result.months[i] ? 'active-phase' : 'inactive-phase'}">${value}</td>`).join('')}<td class="hemodialysis-cell">${quantity(unit.hemodialysis)}</td></tr>`).join('')}</tbody><tfoot><tr><th scope="row">Total</th>${DP_TOTALS.map((value, i) => `<td class="${result.months[i] ? 'active-phase' : 'inactive-phase'}">${value}</td>`).join('')}<td class="hemodialysis-cell">${quantity(HEMODIALYSIS_TOTAL)}</td></tr></tfoot></table>
         </div>
       </section>
     </div>
-    <div class="scenario-method" id="${methodId}"><p><strong>${costLabel} · anual</strong> = ${formula}. <strong>Diferença</strong> = ${costLabel} (anual) − PLOA anual.</p><p>PLOA anual = valor mensal informado × 12, sem reajustes. DP previstas em cada fase; fases com 0 meses não compõem o custeio deste cenário.</p></div>`;
+    <div class="scenario-method" id="${methodId}"><p><strong>${costLabel} · anual</strong> = ${formula}. <strong>Diferença</strong> = ${costLabel} (anual) − PLOA anual.</p><p>PLOA anual = valor mensal informado × 12, sem reajustes. DP previstas em cada fase; fases com 0 meses não compõem o custeio deste cenário. Hemodiálise: quantidade informada na planilha, sem discriminação por fase.</p></div>`;
 }
 
 function renderComparison(simulation) {

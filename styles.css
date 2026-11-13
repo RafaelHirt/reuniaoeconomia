@@ -430,7 +430,7 @@ blockquote p:last-child{margin-bottom:0}
 .phase-period small{font-size:10px;white-space:nowrap}
 .phase-1{background:#e1ead4}.phase-2{background:#c0d4ad}.phase-3{background:var(--green);color:white}
 .phase-period.phase-3 span,.phase-period.phase-3 small{color:#e2eadb}
-.scenario-columns{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:18px;align-items:start}
+.scenario-columns{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:18px;align-items:start}
 .budget-table-card{min-width:0;border:1px solid #d6dfcd;border-radius:12px;overflow:hidden;background:var(--white)}
 .table-card-heading{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:13px 15px;border-bottom:1px solid var(--line)}
 .table-card-heading h2{font-size:13px;letter-spacing:-.1px}
@@ -450,8 +450,8 @@ blockquote p:last-child{margin-bottom:0}
 .annual-budget-table tr>*:last-child{background:#f6f0dd;font-weight:600;color:var(--green)}
 .annual-budget-table tfoot th,.annual-budget-table tfoot td,.dp-table tfoot th,.dp-table tfoot td{background:var(--green);color:white;border-top:2px solid var(--yellow);border-bottom:0;font-size:12px;font-weight:600;padding-top:13px;padding-bottom:13px}
 .annual-budget-table tfoot tr>*:last-child{color:#f4d783;background:#24533f}
-.dp-table{min-width:340px;font-size:13px}
-.dp-unit-col{width:43%}
+.dp-table{min-width:430px;font-size:13px}
+.dp-unit-col{width:32%}.dp-phase-col{width:14%}.hemodialysis-col{width:26%}
 .dp-table th{text-align:left}
 .dp-table td,.dp-table thead th:not(:first-child){text-align:center}
 .dp-table th,.dp-table td{padding-left:9px;padding-right:9px}
@@ -516,7 +516,7 @@ blockquote p:last-child{margin-bottom:0}
 .noscript-note{padding:20px;border:1px solid var(--line);border-radius:8px;background:var(--white);color:var(--green)}
 @media screen{
  .presentation-mode .annual-budget-table,.presentation-mode .dp-table,.presentation-mode .scenario-summary-table{min-width:0}
- .presentation-mode .scenario-columns{grid-template-columns:minmax(0,1.7fr) minmax(0,1fr)}
+ .presentation-mode .scenario-columns{grid-template-columns:minmax(0,1.55fr) minmax(0,1fr)}
  .presentation-mode .phase-period{padding-top:10px;padding-bottom:10px}
  .presentation-mode .budget-metric>strong{font-size:28px}
  .presentation-mode .budget-metric{padding:14px 18px;gap:5px}
@@ -564,7 +564,7 @@ blockquote p:last-child{margin-bottom:0}
  .budget-metric{padding:10px 14px;gap:4px;border-radius:8px}
  .budget-metric>span{font-size:9px}.budget-metric>strong,.presentation-mode .budget-metric>strong{font-size:22px}.budget-metric>small{font-size:8px}
  .phase-timeline{margin-bottom:12px}.phase-period{padding:9px 12px}.phase-period>div{gap:10px}.phase-period strong{font-size:10px}.phase-period span,.phase-period small{font-size:9px}
- .scenario-columns{grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:12px}
+ .scenario-columns{grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:12px}
  .table-card-heading{padding:9px 10px}.table-card-heading h2{font-size:10px}.table-card-heading>span{font-size:7px}
  .annual-budget-table,.dp-table,.scenario-summary-table{min-width:0;font-size:10px}
  .annual-budget-table th,.annual-budget-table td,.dp-table th,.dp-table td{padding:7px 8px}
@@ -593,7 +593,7 @@ blockquote p:last-child{margin-bottom:0}
 @media screen and (max-width:620px){
  body:not(.presentation-mode) .budget-scroll-hint{display:flex;align-items:center;gap:7px;font-size:10px;line-height:1.6;color:var(--muted);margin:0;padding:8px 12px;background:#f6f8f0}
  body:not(.presentation-mode) .comparison-heading+.budget-scroll-hint{padding:0 0 8px;background:transparent}
- body:not(.presentation-mode) .dp-table{min-width:0}
+ body:not(.presentation-mode) .dp-table{min-width:430px}
 }
 .cover h1.supecc-title{font-family:var(--sans);font-size:clamp(52px,7vw,104px);font-weight:600;line-height:1.05;letter-spacing:-3px}
 .cover-meeting{font-size:16px;font-weight:500;color:var(--green-light);margin:14px 0 0;letter-spacing:.4px}
@@ -617,4 +617,14 @@ blockquote p:last-child{margin-bottom:0}
  .heal-dates>div{padding:12px 16px;break-inside:avoid}
  .heal-dates span{font-size:10px}.heal-dates time{font-size:16px}
  .heal-dates,.heal-dates>div{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+
+.dp-table .hemodialysis-cell{background:#f6f0dd;color:var(--green);font-weight:600;border-left:1px solid #e4dcc1}
+.dp-table tfoot .hemodialysis-cell{background:#24533f;color:#f4d783;border-left-color:#ffffff24}
+@media screen{
+ .dp-table thead th:first-child,.dp-table tbody th,.dp-table tfoot th{position:sticky;left:0;z-index:1}
+ .dp-table thead th:first-child{z-index:2;background:#edf1e7}
+ .dp-table tbody th{background:var(--white)}
+ .dp-table tbody tr:nth-child(even) th{background:#fafbf7}
+ .dp-table tfoot th{background:var(--green)}
 }

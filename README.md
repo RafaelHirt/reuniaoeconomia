@@ -24,7 +24,7 @@ O build copia `index.html`, `styles.css`, `app.js`, `budget.js` e as logos para 
 
 ## Base e método de cálculo
 
-Os valores mensais e as quantidades de DP foram transcritos da imagem fornecida nesta solicitação. A coluna C, intitulada LOA 2027 na imagem, é usada como referência da PLOA solicitada para os cenários. `budget.js` é a fonte dos valores e dos cálculos; todos os custos são calculados em centavos inteiros.
+Os valores mensais, as DP e as quantidades de Hemodiálise foram conferidos com o arquivo `Diferença LOA x Aditivo - 12 meses (3) (1).ods`, fornecido pelo usuário. A coluna C, intitulada LOA 2027 na imagem, é usada como referência da PLOA solicitada para os cenários. `budget.js` é a fonte dos valores e dos cálculos; todos os custos são calculados em centavos inteiros.
 
 - PLOA anual de cada unidade = valor mensal informado × 12.
 - Valor anual do Termo Aditivo = soma do custeio mensal de cada fase × quantidade de meses naquela fase.
@@ -33,17 +33,17 @@ Os valores mensais e as quantidades de DP foram transcritos da imagem fornecida 
 
 Não são aplicados reajustes ou valores de investimento adicionais. As fases seguem a ordem I → II → III, começando em janeiro de 2027. A referência anual resulta em **R$ 141.999.999,96**, pois preserva os centavos dos valores mensais fornecidos, sem arredondar para R$ 142 milhões.
 
-| Unidade | PLOA mensal | Fase I mensal | Fase II mensal | Fase III mensal | DP I | DP II | DP III |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| P. Formosa | R$ 1.908.333,33 | R$ 2.058.789,40 | R$ 2.169.724,00 | R$ 2.295.347,84 | 16 | 26 | 30 |
-| P. Goianésia | R$ 1.875.000,00 | R$ 1.958.267,82 | R$ 2.069.202,42 | R$ 2.261.387,02 | 16 | 26 | 36 |
-| P. Goiás | R$ 1.983.333,33 | R$ 2.093.186,93 | R$ 2.204.121,53 | R$ 2.396.306,13 | 10 | 20 | 30 |
-| P. Posse | R$ 2.341.666,67 | R$ 2.627.874,89 | R$ 2.738.809,49 | R$ 2.864.433,33 | 16 | 26 | 30 |
-| P. Quirinópolis | R$ 1.933.333,33 | R$ 2.088.387,67 | R$ 2.199.322,27 | R$ 2.324.946,11 | 16 | 26 | 30 |
-| P. SLMB | R$ 1.791.666,67 | R$ 1.860.858,34 | R$ 1.971.792,94 | R$ 2.163.977,54 | 10 | 20 | 30 |
-| **Total** | **R$ 11.833.333,33** | **R$ 12.687.365,05** | **R$ 13.352.972,65** | **R$ 14.306.397,97** | **84** | **144** | **186** |
+| Unidade | PLOA mensal | Fase I mensal | Fase II mensal | Fase III mensal | DP I | DP II | DP III | Hemodiálise |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| P. Formosa | R$ 1.908.333,33 | R$ 2.058.789,40 | R$ 2.169.724,00 | R$ 2.295.347,84 | 16 | 26 | 30 | 624 |
+| P. Goianésia | R$ 1.875.000,00 | R$ 1.958.267,82 | R$ 2.069.202,42 | R$ 2.261.387,02 | 16 | 26 | 36 | 364 |
+| P. Goiás | R$ 1.983.333,33 | R$ 2.093.186,93 | R$ 2.204.121,53 | R$ 2.396.306,13 | 10 | 20 | 30 | 636 |
+| P. Posse | R$ 2.341.666,67 | R$ 2.627.874,89 | R$ 2.738.809,49 | R$ 2.864.433,33 | 16 | 26 | 30 | 884 |
+| P. Quirinópolis | R$ 1.933.333,33 | R$ 2.088.387,67 | R$ 2.199.322,27 | R$ 2.324.946,11 | 16 | 26 | 30 | 546 |
+| P. SLMB | R$ 1.791.666,67 | R$ 1.860.858,34 | R$ 1.971.792,94 | R$ 2.163.977,54 | 10 | 20 | 30 | 480 |
+| **Total** | **R$ 11.833.333,33** | **R$ 12.687.365,05** | **R$ 13.352.972,65** | **R$ 14.306.397,97** | **84** | **144** | **186** | **3.534** |
 
-DP é apresentada conforme a sigla da planilha, sem atribuir uma expansão não informada. Os quadros de ambos os cenários mostram as três fases e destacam quais têm meses previstos. A quantidade de DP de cada fase não é multiplicada pelos meses, nem somada às demais fases para criar um total anual. A coluna de hemodiálise da imagem não é usada como valor financeiro adicional.
+DP é apresentada conforme a sigla da planilha, sem atribuir uma expansão não informada. Os quadros de ambos os cenários mostram as três fases e destacam quais têm meses previstos. A quantidade de DP de cada fase não é multiplicada pelos meses, nem somada às demais fases para criar um total anual. A coluna **Hemodiálise**, com total de **3.534**, aparece ao lado das DP nos dois cenários e na simulação. Os quantitativos são reproduzidos conforme a coluna T da planilha, que não discrimina Hemodiálise por fase nem informa periodicidade. Os cálculos de custeio usam os valores monetários das fases.
 
 ## Cenários e simulação
 

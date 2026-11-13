@@ -5,21 +5,24 @@ export const MONTH_NAMES = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ag
 // Monthly amounts supplied in the worksheet, stored in whole BRL cents.
 // DP is the quantity planned at each phase, not a sum over the year.
 export const UNITS = [
-  { name: 'P. Formosa', current: 240134513, ploa: 190833333, costs: [205878940, 216972400, 229534784], dp: [16, 26, 30] },
-  { name: 'P. Goianésia', current: 228086207, ploa: 187500000, costs: [195826782, 206920242, 226138702], dp: [16, 26, 36] },
-  { name: 'P. Goiás', current: 267763367, ploa: 198333333, costs: [209318693, 220412153, 239630613], dp: [10, 20, 30] },
-  { name: 'P. Posse', current: 306930180, ploa: 234166667, costs: [262787489, 273880949, 286443333], dp: [16, 26, 30] },
-  { name: 'P. Quirinópolis', current: 232704125, ploa: 193333333, costs: [208838767, 219932227, 232494611], dp: [16, 26, 30] },
-  { name: 'P. SLMB', current: 196684475, ploa: 179166667, costs: [186085834, 197179294, 216397754], dp: [10, 20, 30] }
+  { name: 'P. Formosa', current: 240134513, ploa: 190833333, costs: [205878940, 216972400, 229534784], dp: [16, 26, 30], hemodialysis: 624 },
+  { name: 'P. Goianésia', current: 228086207, ploa: 187500000, costs: [195826782, 206920242, 226138702], dp: [16, 26, 36], hemodialysis: 364 },
+  { name: 'P. Goiás', current: 267763367, ploa: 198333333, costs: [209318693, 220412153, 239630613], dp: [10, 20, 30], hemodialysis: 636 },
+  { name: 'P. Posse', current: 306930180, ploa: 234166667, costs: [262787489, 273880949, 286443333], dp: [16, 26, 30], hemodialysis: 884 },
+  { name: 'P. Quirinópolis', current: 232704125, ploa: 193333333, costs: [208838767, 219932227, 232494611], dp: [16, 26, 30], hemodialysis: 546 },
+  { name: 'P. SLMB', current: 196684475, ploa: 179166667, costs: [186085834, 197179294, 216397754], dp: [10, 20, 30], hemodialysis: 480 }
 ];
 
 export const HEAL = { ploa: 815833333, current: 930885876 };
 export const SCENARIOS = { first: [12, 0, 0], phased: [3, 3, 6], simulation: [6, 6, 0] };
 export const DP_TOTALS = PHASES.map((_, phase) => UNITS.reduce((sum, unit) => sum + unit.dp[phase], 0));
+export const HEMODIALYSIS_TOTAL = UNITS.reduce((sum, unit) => sum + unit.hemodialysis, 0);
 export const PHASE_MONTHLY_TOTALS = PHASES.map((_, phase) => UNITS.reduce((sum, unit) => sum + unit.costs[phase], 0));
 
+const quantities = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 });
 const currency = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
 const percent = new Intl.NumberFormat('pt-BR', { style: 'percent', minimumFractionDigits: 2, maximumFractionDigits: 2 });
+export const quantity = value => quantities.format(value);
 export const money = cents => currency.format(cents / 100);
 export const percentage = fraction => percent.format(fraction);
 
