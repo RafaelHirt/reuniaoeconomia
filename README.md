@@ -1,6 +1,6 @@
-# Reunião SES-GO / Economia — cenários 2027
+# SUPECC — Reunião com a SUBPAS · cenários 2027
 
-Apresentação web estática com abertura, Cenário I, Cenário II, Comparativo e simulação, HEAL e encerramento. A identidade visual da capa e as logos oficiais da SES-GO são preservadas. Não há cronômetro nem dependências externas.
+Apresentação web estática com abertura, Cenário I, Cenário II, Comparativo e simulação, HEAL e encerramento. A capa apresenta SUPECC e Reunião SUPECC, com a identidade visual e as logos oficiais da SES-GO. As demais telas usam Reunião com a SUBPAS no cabeçalho; o encerramento usa Reunião com SUBPAS. Não há cronômetro nem dependências externas.
 
 ## Desenvolvimento e publicação
 
@@ -20,15 +20,15 @@ npm run build
 npm run preview
 ```
 
-O build copia `index.html`, `styles.css`, `app.js`, `budget.js` e as logos para `dist/`. No Netlify, use a branch `main`, build `npm run build` e diretório de publicação `dist`. O arquivo `netlify.toml` registra esses parâmetros e os cabeçalhos HTTP. Em um projeto já conectado ao GitHub, **Deploys → Trigger deploy → Deploy site** publica a versão mais recente.
+O build copia `index.html`, `styles.css`, `app.js`, `budget.js` e as logos para `dist/`. No Netlify, use a branch `main`, build `npm run build` e diretório de publicação `dist`. O arquivo `netlify.toml` registra esses parâmetros e os cabeçalhos HTTP. O projeto Netlify se chama `reuniao-subpas` e usa https://reuniao-subpas.netlify.app. O repositório GitHub continua sendo `RafaelHirt/reuniaoeconomia`. Em um projeto já conectado ao GitHub, **Deploys → Trigger deploy → Deploy site** publica a versão mais recente.
 
 ## Base e método de cálculo
 
 Os valores mensais e as quantidades de DP foram transcritos da imagem fornecida nesta solicitação. A coluna C, intitulada LOA 2027 na imagem, é usada como referência da PLOA solicitada para os cenários. `budget.js` é a fonte dos valores e dos cálculos; todos os custos são calculados em centavos inteiros.
 
 - PLOA anual de cada unidade = valor mensal informado × 12.
-- Custeio necessário anual = soma do custeio mensal de cada fase × quantidade de meses naquela fase.
-- Diferença anual = custeio necessário − PLOA anual.
+- Valor anual do Termo Aditivo = soma do custeio mensal de cada fase × quantidade de meses naquela fase.
+- Diferença anual = valor do Termo Aditivo − PLOA anual.
 - Percentual de acréscimo = diferença anual ÷ PLOA anual.
 
 Não são aplicados reajustes ou valores de investimento adicionais. As fases seguem a ordem I → II → III, começando em janeiro de 2027. A referência anual resulta em **R$ 141.999.999,96**, pois preserva os centavos dos valores mensais fornecidos, sem arredondar para R$ 142 milhões.
@@ -47,7 +47,9 @@ DP é apresentada conforme a sigla da planilha, sem atribuir uma expansão não 
 
 ## Cenários e simulação
 
-| Cenário | Distribuição em 2027 | Necessário anual | Diferença para a PLOA | Acréscimo |
+No Cenário I, o valor anual e a coluna da tabela são identificados como **Termo Aditivo 1º Fase**; no Cenário II, como **Termo Aditivo Fases RD**. No simulador, a identificação é **Termo Aditivo das fases simuladas**. As diferenças continuam sendo o valor do Termo Aditivo menos a PLOA, sem alteração dos valores ou do método.
+
+| Cenário | Distribuição em 2027 | Termo Aditivo anual | Diferença para a PLOA | Acréscimo |
 | --- | --- | ---: | ---: | ---: |
 | I | Fase I de jan. a dez. | R$ 152.248.380,60 | R$ 10.248.380,64 | 7,22% |
 | II | I: jan.–mar.; II: abr.–jun.; III: jul.–dez. | R$ 163.959.400,92 | R$ 21.959.400,96 | 15,46% |
@@ -57,7 +59,7 @@ A aba Comparativo permite editar os meses das três fases e escolher as distribu
 
 ## HEAL
 
-A aba HEAL usa valores mensais e fica separada dos totais das seis policlínicas.
+A aba HEAL usa valores mensais e fica separada dos totais das seis policlínicas. Informa também **Vencimento: 25/04/2027** e **Primeiro Ofício de Aceite: 06/02/2026**.
 
 | Indicador | Valor mensal |
 | --- | ---: |

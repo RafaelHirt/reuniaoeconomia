@@ -19,17 +19,17 @@ function renderTimeline(result) {
   return `<div class="phase-timeline" aria-label="Cronograma de janeiro a dezembro de 2027">${schedule(result.months).map(item => `<div class="phase-period phase-${item.phase + 1}" style="flex:${item.months}" title="${PHASES[item.phase]}: ${item.label}, ${item.months} meses"><div><strong>${PHASES[item.phase]}</strong><span>${item.label}</span></div><small>${item.months} ${item.months === 1 ? 'mês' : 'meses'}</small></div>`).join('')}</div>`;
 }
 
-function renderScenario(target, result, showMetrics = true) {
+function renderScenario(target, result, showMetrics = true, costLabel = 'Termo Aditivo das fases simuladas') {
   const methodId = `${target.id}-method`;
   const formula = result.months.flatMap((months, phase) => months ? [`(${months} × custeio mensal da ${PHASES[phase]})`] : []).join(' + ');
-  target.innerHTML = `${showMetrics ? `<div class="budget-metrics">${budgetMetric('PLOA 2027 · anual', result.ploa, 'Seis policlínicas · valor mensal × 12', false, 'ploa')}${budgetMetric('Custeio necessário · anual', result.needed, 'Conforme a distribuição de fases', false, 'needed')}${budgetMetric('Acréscimo à PLOA · anual', result.difference, `${percentage(result.increase)} acima da PLOA`, true, 'difference')}</div>` : ''}
+  target.innerHTML = `${showMetrics ? `<div class="budget-metrics">${budgetMetric('PLOA 2027 · anual', result.ploa, 'Seis policlínicas · valor mensal × 12', false, 'ploa')}${budgetMetric(`${costLabel} · anual`, result.needed, 'Conforme a distribuição de fases', false, 'needed')}${budgetMetric('Acréscimo à PLOA · anual', result.difference, `${percentage(result.increase)} acima da PLOA`, true, 'difference')}</div>` : ''}
     ${renderTimeline(result)}
     <div class="scenario-columns">
       <section class="budget-table-card">
         <div class="table-card-heading"><h2>Custeio e diferença para a PLOA</h2><span>VALORES ANUAIS</span></div>
         <p class="budget-scroll-hint"><span aria-hidden="true">↔</span> Deslize para ver todas as colunas.</p>
         <div class="budget-table-scroll" role="region" aria-label="Custos anuais e diferença para a PLOA por policlínica" tabindex="0">
-          <table class="annual-budget-table" aria-describedby="${methodId}"><caption class="sr-only">Valores anuais de 2027. A diferença é o custeio necessário menos o valor da PLOA.</caption><colgroup><col class="budget-unit-col"><col span="3"></colgroup><thead><tr><th scope="col">Unidade</th><th scope="col">PLOA 2027</th><th scope="col">Necessário</th><th scope="col">Diferença<br>Necessário − PLOA</th></tr></thead><tbody>${result.rows.map(row => `<tr><th scope="row">${row.name}</th><td>${money(row.ploa)}</td><td>${money(row.needed)}</td><td>${money(row.difference)}</td></tr>`).join('')}</tbody><tfoot><tr><th scope="row">Total</th><td data-total="ploa">${money(result.ploa)}</td><td data-total="needed">${money(result.needed)}</td><td data-total="difference">${money(result.difference)}</td></tr></tfoot></table>
+          <table class="annual-budget-table" aria-describedby="${methodId}"><caption class="sr-only">Valores anuais de 2027. A diferença é o valor anual do ${costLabel} menos a PLOA anual.</caption><colgroup><col class="budget-unit-col"><col span="3"></colgroup><thead><tr><th scope="col">Unidade</th><th scope="col">PLOA 2027</th><th scope="col">${costLabel}</th><th scope="col">Diferença<br>Termo Aditivo − PLOA</th></tr></thead><tbody>${result.rows.map(row => `<tr><th scope="row">${row.name}</th><td>${money(row.ploa)}</td><td>${money(row.needed)}</td><td>${money(row.difference)}</td></tr>`).join('')}</tbody><tfoot><tr><th scope="row">Total</th><td data-total="ploa">${money(result.ploa)}</td><td data-total="needed">${money(result.needed)}</td><td data-total="difference">${money(result.difference)}</td></tr></tfoot></table>
         </div>
       </section>
       <section class="budget-table-card dp-card">
@@ -39,7 +39,7 @@ function renderScenario(target, result, showMetrics = true) {
         </div>
       </section>
     </div>
-    <div class="scenario-method" id="${methodId}"><p><strong>Necessário anual</strong> = ${formula}. <strong>Diferença</strong> = necessário anual − PLOA anual.</p><p>PLOA anual = valor mensal informado × 12, sem reajustes. DP previstas em cada fase; fases com 0 meses não compõem o custeio deste cenário.</p></div>`;
+    <div class="scenario-method" id="${methodId}"><p><strong>${costLabel} · anual</strong> = ${formula}. <strong>Diferença</strong> = ${costLabel} (anual) − PLOA anual.</p><p>PLOA anual = valor mensal informado × 12, sem reajustes. DP previstas em cada fase; fases com 0 meses não compõem o custeio deste cenário.</p></div>`;
 }
 
 function renderComparison(simulation) {
@@ -48,7 +48,7 @@ function renderComparison(simulation) {
     { key: 'phased', label: 'Cenário II', result: calculateScenario(SCENARIOS.phased) },
     { key: 'simulation', label: 'Sua simulação', result: simulation }
   ];
-  document.querySelector('#scenario-comparison').innerHTML = `<div class="comparison-heading"><h2>Comparação anual</h2><span>PLOA 2027: <strong>${money(simulation.ploa)}</strong></span></div><p class="budget-scroll-hint"><span aria-hidden="true">↔</span> Deslize para comparar os valores.</p><div class="budget-table-scroll comparison-scroll" role="region" aria-label="Comparação dos dois cenários e da simulação" tabindex="0"><table class="scenario-summary-table"><caption class="sr-only">Comparação anual para as seis policlínicas, com a mesma PLOA em todos os cenários.</caption><thead><tr><th scope="col">Cenário</th><th scope="col">Meses nas fases I / II / III</th><th scope="col">Custeio necessário</th><th scope="col">Acréscimo à PLOA</th><th scope="col">Acréscimo %</th></tr></thead><tbody>${comparisons.map(({ key, label, result }) => `<tr data-scenario-row="${key}" class="${key === 'simulation' ? 'simulation-row' : ''}"><th scope="row">${label}</th><td>${result.months.join(' / ')}</td><td data-total="needed">${money(result.needed)}</td><td data-total="difference">${money(result.difference)}</td><td>${percentage(result.increase)}</td></tr>`).join('')}</tbody></table></div>`;
+  document.querySelector('#scenario-comparison').innerHTML = `<div class="comparison-heading"><h2>Comparação anual</h2><span>PLOA 2027: <strong>${money(simulation.ploa)}</strong></span></div><p class="budget-scroll-hint"><span aria-hidden="true">↔</span> Deslize para comparar os valores.</p><div class="budget-table-scroll comparison-scroll" role="region" aria-label="Comparação dos dois cenários e da simulação" tabindex="0"><table class="scenario-summary-table"><caption class="sr-only">Comparação anual para as seis policlínicas, com a mesma PLOA em todos os cenários.</caption><thead><tr><th scope="col">Cenário</th><th scope="col">Meses nas fases I / II / III</th><th scope="col">Termo Aditivo · anual</th><th scope="col">Acréscimo à PLOA</th><th scope="col">Acréscimo %</th></tr></thead><tbody>${comparisons.map(({ key, label, result }) => `<tr data-scenario-row="${key}" class="${key === 'simulation' ? 'simulation-row' : ''}"><th scope="row">${label}</th><td>${result.months.join(' / ')}</td><td data-total="needed">${money(result.needed)}</td><td data-total="difference">${money(result.difference)}</td><td>${percentage(result.increase)}</td></tr>`).join('')}</tbody></table></div>`;
 }
 
 function initializeSimulation() {
@@ -75,7 +75,7 @@ function initializeSimulation() {
     status.textContent = '12 de 12 meses distribuídos. As fases seguem a ordem I → II → III.';
     renderComparison(simulation);
     renderScenario(document.querySelector('#scenario-simulation'), simulation, false);
-    document.querySelector('#simulation-announcement').textContent = `Custeio necessário anual: ${money(simulation.needed)}. Acréscimo à PLOA: ${money(simulation.difference)}, equivalente a ${percentage(simulation.increase)}.`;
+    document.querySelector('#simulation-announcement').textContent = `Termo Aditivo anual: ${money(simulation.needed)}. Acréscimo à PLOA: ${money(simulation.difference)}, equivalente a ${percentage(simulation.increase)}.`;
     fitPresentation();
   }
   inputs.forEach(input => input.addEventListener('input', update));
@@ -88,8 +88,8 @@ function initializeSimulation() {
 }
 
 function initializeBudgetViews() {
-  renderScenario(document.querySelector('#scenario-first'), calculateScenario(SCENARIOS.first));
-  renderScenario(document.querySelector('#scenario-phased'), calculateScenario(SCENARIOS.phased));
+  renderScenario(document.querySelector('#scenario-first'), calculateScenario(SCENARIOS.first), true, 'Termo Aditivo 1º Fase');
+  renderScenario(document.querySelector('#scenario-phased'), calculateScenario(SCENARIOS.phased), true, 'Termo Aditivo Fases RD');
   const difference = HEAL.current - HEAL.ploa;
   document.querySelector('#heal-report').innerHTML = `<div class="budget-metrics heal-metrics">${budgetMetric('PLOA 2027 · mensal', HEAL.ploa, 'Valor informado para o HEAL', false, 'ploa')}${budgetMetric('Custeio atual · mensal', HEAL.current, 'Valor mensal atual do HEAL', false, 'current')}${budgetMetric('Diferença mensal', difference, `${percentage(difference / HEAL.ploa)} acima da PLOA`, true, 'difference')}</div><div class="heal-chart" role="img" aria-label="PLOA mensal de ${money(HEAL.ploa)} e custeio atual mensal de ${money(HEAL.current)}"><div class="heal-bar-row"><span>PLOA 2027</span><div class="heal-bar-track"><div class="heal-bar ploa-bar" style="width:${HEAL.ploa / HEAL.current * 100}%"></div></div><strong>${money(HEAL.ploa)}</strong></div><div class="heal-bar-row"><span>Custeio atual</span><div class="heal-bar-track"><div class="heal-bar current-bar" style="width:100%"></div></div><strong>${money(HEAL.current)}</strong></div></div><div class="heal-difference"><div><span>DIFERENÇA MENSAL · HEAL</span><p>Valor atual − valor PLOA</p></div><strong>${money(difference)}</strong></div><p class="heal-note">Valores mensais. O HEAL é apresentado separadamente dos cenários das seis policlínicas.</p>`;
   initializeSimulation();
@@ -132,7 +132,10 @@ function showSlide(index, moveFocus = false) {
   document.querySelector('.progress').setAttribute('aria-valuemax', String(slides.length));
   previous.disabled = current === 0;
   next.disabled = current === slides.length - 1;
-  document.title = `${slides[current].querySelector('h1').textContent.replace(/\s+/g, ' ').trim()} • SES-GO`;
+  const meetingName = current === 0 ? 'Reunião SUPECC' : 'Reunião com a SUBPAS';
+  document.querySelector('#meeting-name').textContent = meetingName;
+  document.querySelector('#meeting-partner').textContent = current === 0 ? 'SES-GO / SUPECC' : 'SES-GO / SUBPAS';
+  document.title = `${slides[current].querySelector('h1').textContent.replace(/\s+/g, ' ').trim()} • ${meetingName}`;
   fitPresentation();
   if (moveFocus) {
     slides[current].scrollTop = 0;
