@@ -43,7 +43,7 @@ Não são aplicados reajustes ou valores de investimento adicionais. As fases se
 | P. SLMB | R$ 1.791.666,67 | R$ 1.860.858,34 | R$ 1.971.792,94 | R$ 2.163.977,54 | 10 | 20 | 30 | 480 |
 | **Total** | **R$ 11.833.333,33** | **R$ 12.687.365,05** | **R$ 13.352.972,65** | **R$ 14.306.397,97** | **84** | **144** | **186** | **3.534** |
 
-DP é apresentada conforme a sigla da planilha, sem atribuir uma expansão não informada. Os quadros de ambos os cenários mostram as três fases e destacam quais têm meses previstos. A quantidade de DP de cada fase não é multiplicada pelos meses, nem somada às demais fases para criar um total anual. A coluna **Hemodiálise**, com total de **3.534**, aparece ao lado das DP nos dois cenários e na simulação. Os quantitativos são reproduzidos conforme a coluna T da planilha, que não discrimina Hemodiálise por fase nem informa periodicidade. Os cálculos de custeio usam os valores monetários das fases.
+DP é apresentada conforme a sigla da planilha, sem atribuir uma expansão não informada. Os quadros de ambos os cenários mostram as três fases e destacam quais têm meses previstos. A quantidade de DP de cada fase não é multiplicada pelos meses, nem somada às demais fases para criar um total anual. A coluna **Hemodiálise**, com total de **3.534**, aparece ao lado das DP nos dois cenários e na simulação. Os quantitativos de Hemodiálise são reproduzidos conforme a coluna T da planilha, sem discriminação por fase. Conforme esclarecimento do usuário, o quadro de DP por fase e Hemodiálise é identificado como **QUANTIDADE MÊS**. Os cálculos de custeio usam os valores monetários das fases.
 
 ## Cenários e simulação
 
