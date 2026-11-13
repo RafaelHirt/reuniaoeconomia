@@ -628,3 +628,57 @@ blockquote p:last-child{margin-bottom:0}
  .dp-table tbody tr:nth-child(even) th{background:#fafbf7}
  .dp-table tfoot th{background:var(--green)}
 }
+.heal-coverage{margin-bottom:20px}
+.heal-coverage h2{font-size:19px;margin:7px 0 0;letter-spacing:-.3px}
+.heal-coverage>strong{font-size:38px}
+.heal-impact-card{margin-top:0}
+.heal-impact-table{width:100%;min-width:760px;border-collapse:collapse;table-layout:fixed;font-size:14px;font-variant-numeric:tabular-nums}
+.heal-period-col{width:28%}
+.heal-impact-table th,.heal-impact-table td{padding:15px 20px;border-bottom:1px solid var(--line);vertical-align:middle}
+.heal-impact-table th{text-align:left}
+.heal-impact-table td,.heal-impact-table thead th:not(:first-child){text-align:right}
+.heal-impact-table td{white-space:nowrap}
+.heal-impact-table thead th{background:#edf1e7;font-size:11px;font-weight:600;color:var(--green)}
+.heal-impact-table tbody th{font-size:13px;font-weight:600;color:var(--green)}
+.heal-impact-table tbody th small{display:block;font-size:10px;font-weight:400;color:var(--muted);margin-top:4px}
+.heal-impact-table tr>*:last-child{background:#f6f0dd;color:var(--green);font-weight:600}
+.heal-impact-table tfoot th,.heal-impact-table tfoot td{background:var(--green);color:white;font-weight:600;border-top:2px solid var(--yellow);border-bottom:0}
+.heal-impact-table tfoot tr>*:last-child{background:#24533f;color:#f4d783}
+@media screen{
+ .presentation-mode .heal-impact-table{min-width:0}
+ .heal-impact-table thead th:first-child,.heal-impact-table tbody th,.heal-impact-table tfoot th{position:sticky;left:0;z-index:1}
+ .heal-impact-table thead th:first-child{background:#edf1e7;z-index:2}
+ .heal-impact-table tbody th{background:var(--white)}
+ .heal-impact-table tfoot th{background:var(--green)}
+}
+@media screen and (max-width:620px){
+ body:not(.presentation-mode) .heal-coverage h2{font-size:18px}
+ body:not(.presentation-mode) .heal-coverage>strong{font-size:30px}
+ .heal-impact-table{font-size:13px}
+}
+@media print{
+ .heal-coverage{margin-bottom:14px;padding:18px 20px}
+ .heal-coverage h2{font-size:16px}.heal-coverage>strong{font-size:30px}
+ .heal-impact-table{min-width:0;font-size:11px}
+ .heal-impact-table th,.heal-impact-table td{padding:11px 13px}
+ .heal-impact-table thead th{font-size:9px}.heal-impact-table tbody th{font-size:10px}.heal-impact-table tbody th small{font-size:8px}
+ .heal-impact-card{break-inside:avoid}
+ .heal-impact-table th,.heal-impact-table td{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+@media screen and (max-width:620px){
+ body:not(.presentation-mode) .heal-impact-card .table-card-heading{align-items:flex-start;flex-direction:column;gap:4px}
+ body:not(.presentation-mode) .heal-impact-card .budget-scroll-hint{display:none}
+ body:not(.presentation-mode) .heal-impact-table{display:block;min-width:0;table-layout:auto;font-size:13px}
+ body:not(.presentation-mode) .heal-impact-table colgroup{display:none}
+ body:not(.presentation-mode) .heal-impact-table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+ body:not(.presentation-mode) .heal-impact-table tbody,body:not(.presentation-mode) .heal-impact-table tfoot{display:block}
+ body:not(.presentation-mode) .heal-impact-table tr{display:grid;grid-template-columns:minmax(0,1fr);border-bottom:1px solid var(--line)}
+ body:not(.presentation-mode) .heal-impact-table tr:last-child{border-bottom:0}
+ body:not(.presentation-mode) .heal-impact-table th,body:not(.presentation-mode) .heal-impact-table td{position:static;border-bottom:0;padding:10px 16px}
+ body:not(.presentation-mode) .heal-impact-table tbody th,body:not(.presentation-mode) .heal-impact-table tfoot th{padding-top:15px;padding-bottom:12px}
+ body:not(.presentation-mode) .heal-impact-table td{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+ body:not(.presentation-mode) .heal-impact-table td::before{content:attr(data-label);font-size:10px;line-height:1.6;font-weight:400;color:var(--muted);white-space:normal;text-align:left}
+ body:not(.presentation-mode) .heal-impact-table tfoot td::before{color:#d9e6ce}
+ body:not(.presentation-mode) .heal-impact-table tfoot th,body:not(.presentation-mode) .heal-impact-table tfoot td{border-top:0}
+ body:not(.presentation-mode) .heal-impact-table tfoot{border-top:2px solid var(--yellow)}
+}

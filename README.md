@@ -1,6 +1,6 @@
 # SUPECC — Reunião com a SUBPAS · cenários 2027
 
-Apresentação web estática com abertura, Cenário I, Cenário II, Comparativo e simulação, HEAL e encerramento. A capa apresenta SUPECC e Reunião SUPECC, com a identidade visual e as logos oficiais da SES-GO. As demais telas usam Reunião com a SUBPAS no cabeçalho; o encerramento usa Reunião com SUBPAS. Não há cronômetro nem dependências externas.
+Apresentação web estática com abertura, Cenário I, Cenário II, Comparativo e simulação, HEAL e encerramento. A capa apresenta SUPECC e Reunião SUBPAS, com a identidade visual e as logos oficiais da SES-GO. As demais telas usam Reunião com a SUBPAS no cabeçalho; o encerramento usa Reunião com SUBPAS. Não há cronômetro nem dependências externas.
 
 ## Desenvolvimento e publicação
 
@@ -47,19 +47,19 @@ DP é apresentada conforme a sigla da planilha, sem atribuir uma expansão não 
 
 ## Cenários e simulação
 
-No Cenário I, o valor anual e a coluna da tabela são identificados como **Termo Aditivo 1º Fase**; no Cenário II, como **Termo Aditivo Fases RD**. No simulador, a identificação é **Termo Aditivo das fases simuladas**. As diferenças continuam sendo o valor do Termo Aditivo menos a PLOA, sem alteração dos valores ou do método.
+O Cenário I contempla as três fases por 3 / 3 / 6 meses e usa **Termo Aditivo Fases RD**. O Cenário II mantém a Fase I pelos 12 meses e usa **Termo Aditivo 1º Fase**. No simulador, a identificação é **Termo Aditivo das fases simuladas**. As diferenças continuam sendo o valor do Termo Aditivo menos a PLOA, sem alteração dos valores ou do método.
 
 | Cenário | Distribuição em 2027 | Termo Aditivo anual | Diferença para a PLOA | Acréscimo |
 | --- | --- | ---: | ---: | ---: |
-| I | Fase I de jan. a dez. | R$ 152.248.380,60 | R$ 10.248.380,64 | 7,22% |
-| II | I: jan.–mar.; II: abr.–jun.; III: jul.–dez. | R$ 163.959.400,92 | R$ 21.959.400,96 | 15,46% |
+| I | I: jan.–mar.; II: abr.–jun.; III: jul.–dez. | R$ 163.959.400,92 | R$ 21.959.400,96 | 15,46% |
+| II | Fase I de jan. a dez. | R$ 152.248.380,60 | R$ 10.248.380,64 | 7,22% |
 | Simulação inicial | I: jan.–jun.; II: jul.–dez. | R$ 156.242.026,20 | R$ 14.242.026,24 | 10,03% |
 
 A aba Comparativo permite editar os meses das três fases e escolher as distribuições prontas 12 / 0 / 0, 3 / 3 / 6 e 6 / 6 / 0. Cada campo aceita inteiros de 0 a 12 e a soma deve ser exatamente 12. Campos vazios, fracionados, negativos, maiores que 12 ou uma soma diferente de 12 impedem a exibição de resultados. A tabela compara os dois cenários fixos com a simulação; o cronograma, os custos por unidade, a diferença e os cabeçalhos do quadro de DP acompanham os meses escolhidos.
 
 ## HEAL
 
-A aba HEAL usa valores mensais e fica separada dos totais das seis policlínicas. Informa também **Vencimento: 25/04/2027** e **Primeiro Ofício de Aceite: 06/02/2026**.
+A aba HEAL apresenta a base mensal e a projeção anual, separada dos totais das seis policlínicas. Informa também **Vencimento: 25/04/2027** e **Primeiro Ofício de Aceite: 06/02/2026**.
 
 | Indicador | Valor mensal |
 | --- | ---: |
@@ -67,6 +67,16 @@ A aba HEAL usa valores mensais e fica separada dos totais das seis policlínicas
 | Custeio atual | R$ 9.308.858,76 |
 | Diferença: atual − PLOA | **R$ 1.150.525,43** |
 
-A diferença equivale a 14,10% acima da PLOA mensal. O gráfico compara os dois valores na mesma escala.
+A redução mensal foi projetada desde janeiro/2027. Conforme esclarecimento do usuário, o desconto começa em maio/2027, após o vencimento de abril. O cálculo considera quatro meses completos (janeiro a abril) com o valor atual e oito meses (maio a dezembro) com o valor mensal da PLOA.
+
+**Cobertura adicional de janeiro a abril = 4 × R$ 1.150.525,43 = R$ 4.602.101,72.**
+
+| Período | Previsto na PLOA | Custeio estimado | Cobertura adicional |
+| --- | ---: | ---: | ---: |
+| Janeiro a abril/2027 | R$ 32.633.333,32 | R$ 37.235.435,04 | R$ 4.602.101,72 |
+| Maio a dezembro/2027 | R$ 65.266.666,64 | R$ 65.266.666,64 | R$ 0,00 |
+| **2027** | **R$ 97.899.999,96** | **R$ 102.502.101,68** | **R$ 4.602.101,72** |
+
+A aba destaca os recursos adicionais a encontrar e explica a distribuição por período. `calculateHealCoverage()` concentra esse cálculo em centavos inteiros. No celular, a tabela é apresentada por período, com os valores identificados.
 
 Edite dados e cálculos em `budget.js`, textos e navegação em `index.html` / `app.js` e a aparência em `styles.css`. As logos oficiais locais vêm da [Sala de Imprensa da SES-GO](https://goias.gov.br/saude/sala-de-imprensa/).

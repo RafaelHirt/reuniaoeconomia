@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { calculateScenario, validMonths, schedule, DP_TOTALS, HEMODIALYSIS_TOTAL, UNITS, HEAL } from '../budget.js';
+import { calculateScenario, validMonths, schedule, DP_TOTALS, HEMODIALYSIS_TOTAL, UNITS, HEAL, calculateHealCoverage } from '../budget.js';
 
-test('Cenário I mantém a Fase I por 12 meses e preserva os centavos da PLOA', () => {
+test('Cenário II mantém a Fase I por 12 meses e preserva os centavos da PLOA', () => {
   const result = calculateScenario([12, 0, 0]);
   assert.equal(result.ploa, 14199999996);
   assert.equal(result.needed, 15224838060);
@@ -10,7 +10,7 @@ test('Cenário I mantém a Fase I por 12 meses e preserva os centavos da PLOA', 
   assert.deepEqual(result.rows.map(row => row.difference), [180547284, 99921384, 131824320, 343449864, 186065208, 83030004]);
 });
 
-test('Cenário II pondera os custos das três fases por 3, 3 e 6 meses', () => {
+test('Cenário I pondera os custos das três fases por 3, 3 e 6 meses', () => {
   const result = calculateScenario([3, 3, 6]);
   assert.equal(result.needed, 16395940092);
   assert.equal(result.difference, 2195940096);
@@ -49,4 +49,18 @@ test('HEAL compara o custeio atual com a PLOA na mesma base mensal', () => {
 test('Hemodiálise reproduz as seis quantidades da planilha e o total', () => {
   assert.deepEqual(UNITS.map(unit => unit.hemodialysis), [624, 364, 636, 884, 546, 480]);
   assert.equal(HEMODIALYSIS_TOTAL, 3534);
+});
+
+test('HEAL cobre quatro meses sem desconto e aplica a redução de maio a dezembro de 2027', () => {
+  const result = calculateHealCoverage();
+  assert.equal(result.year, 2027);
+  assert.equal(result.monthlyReduction, 115052543);
+  assert.equal(result.monthsBeforeReduction, 4);
+  assert.equal(result.monthsAfterReduction, 8);
+  assert.deepEqual(result.periods.map(period => [period.ploa, period.needed, period.difference]), [
+    [3263333332, 3723543504, 460210172], [6526666664, 6526666664, 0]
+  ]);
+  assert.equal(result.additional, 460210172);
+  assert.equal(result.ploa, 9789999996);
+  assert.equal(result.needed, 10250210168);
 });

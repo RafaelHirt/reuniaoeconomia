@@ -13,7 +13,7 @@ export const UNITS = [
   { name: 'P. SLMB', current: 196684475, ploa: 179166667, costs: [186085834, 197179294, 216397754], dp: [10, 20, 30], hemodialysis: 480 }
 ];
 
-export const HEAL = { ploa: 815833333, current: 930885876 };
+export const HEAL = { ploa: 815833333, current: 930885876, reductionStartMonth: 5 };
 export const SCENARIOS = { first: [12, 0, 0], phased: [3, 3, 6], simulation: [6, 6, 0] };
 export const DP_TOTALS = PHASES.map((_, phase) => UNITS.reduce((sum, unit) => sum + unit.dp[phase], 0));
 export const HEMODIALYSIS_TOTAL = UNITS.reduce((sum, unit) => sum + unit.hemodialysis, 0);
@@ -51,4 +51,17 @@ export function schedule(months) {
     nextMonth += duration;
     return [{ phase, months: duration, start, end: nextMonth - 1, label: `${MONTH_NAMES[start]}/27${duration > 1 ? ` – ${MONTH_NAMES[nextMonth - 1]}/27` : ''}` }];
   });
+}
+
+export function calculateHealCoverage() {
+  const monthsBeforeReduction = HEAL.reductionStartMonth - 1;
+  const monthsAfterReduction = 12 - monthsBeforeReduction;
+  const monthlyReduction = HEAL.current - HEAL.ploa;
+  const periods = [
+    { months: monthsBeforeReduction, ploa: HEAL.ploa * monthsBeforeReduction, needed: HEAL.current * monthsBeforeReduction },
+    { months: monthsAfterReduction, ploa: HEAL.ploa * monthsAfterReduction, needed: HEAL.ploa * monthsAfterReduction }
+  ].map(period => ({ ...period, difference: period.needed - period.ploa }));
+  const ploa = HEAL.ploa * 12;
+  const needed = periods.reduce((sum, period) => sum + period.needed, 0);
+  return { year: YEAR, monthlyReduction, monthsBeforeReduction, monthsAfterReduction, periods, ploa, needed, additional: needed - ploa };
 }

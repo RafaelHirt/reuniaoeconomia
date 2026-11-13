@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#123e30">
   <meta name="description" content="Cenários de custeio das policlínicas para 2027: fases, DP previstas, Hemodiálise, diferença em relação à PLOA, simulação de meses e custeio mensal do HEAL.">
-  <title>SUPECC • Reunião SUPECC</title>
+  <title>SUPECC • Reunião SUBPAS</title>
   <link rel="stylesheet" href="styles.css">
   <script src="app.js" type="module"></script>
 </head>
@@ -17,8 +17,8 @@
     <nav aria-label="Tópicos da apresentação">
       <a href="#abertura" data-slide="0"><span>01</span>Visão geral</a>
       <div class="nav-group">POLICLÍNICAS · PLOA 2027</div>
-      <a href="#cenario-i" data-slide="1"><span>02</span>Cenário I · Fase I por 12 meses</a>
-      <a href="#cenario-ii" data-slide="2"><span>03</span>Cenário II · Três fases</a>
+      <a href="#cenario-i" data-slide="1"><span>02</span>Cenário I · Três fases</a>
+      <a href="#cenario-ii" data-slide="2"><span>03</span>Cenário II · Fase I por 12 meses</a>
       <a href="#comparativo" data-slide="3"><span>04</span>Comparativo e simulação</a>
       <div class="nav-group">CUSTEIO MENSAL</div>
       <a href="#heal" data-slide="4"><span>05</span>HEAL</a>
@@ -29,16 +29,16 @@
   <button id="menu-backdrop" class="menu-backdrop" aria-label="Fechar pautas" tabindex="-1" hidden></button>
   <a class="skip-link" href="#presentation">Ir para o conteúdo</a>
   <div class="workspace">
-    <header class="topbar"><span class="meeting-brand"><b>SES-GO</b><i>/</i><span id="meeting-name">Reunião SUPECC</span></span><div><button id="agenda-toggle" aria-expanded="false" aria-controls="agenda-menu">Pautas</button><button id="mode-toggle" aria-pressed="true">Modo leitura</button><button id="print" title="Imprimir ou salvar em PDF">Imprimir / PDF</button><button id="fullscreen" title="Alternar tela cheia">Tela cheia</button></div></header>
+    <header class="topbar"><span class="meeting-brand"><b>SES-GO</b><i>/</i><span id="meeting-name">Reunião SUBPAS</span></span><div><button id="agenda-toggle" aria-expanded="false" aria-controls="agenda-menu">Pautas</button><button id="mode-toggle" aria-pressed="true">Modo leitura</button><button id="print" title="Imprimir ou salvar em PDF">Imprimir / PDF</button><button id="fullscreen" title="Alternar tela cheia">Tela cheia</button></div></header>
     <main id="presentation" tabindex="-1">
       <section class="slide cover" id="abertura" aria-labelledby="title-0">
         <img class="cover-logo" src="assets/logo-ses-escura.png" alt="SUS — Secretaria de Estado da Saúde — Estado de Goiás" width="3338" height="675">
         <div class="cover-grid">
-          <div><span class="pill">PROGRAMAÇÃO ORÇAMENTÁRIA · 2027</span><h1 id="title-0" class="supecc-title">SUPECC</h1><p class="cover-meeting">Reunião SUPECC</p><p class="cover-description">Cenários de custeio das policlínicas<br class="desktop"> e programação orçamentária do HEAL.</p><button class="primary" id="begin">Iniciar apresentação <span aria-hidden="true">→</span></button></div>
+          <div><span class="pill">PROGRAMAÇÃO ORÇAMENTÁRIA · 2027</span><h1 id="title-0" class="supecc-title">SUPECC</h1><p class="cover-meeting">Reunião SUBPAS</p><p class="cover-description">Cenários de custeio das policlínicas<br class="desktop"> e programação orçamentária do HEAL.</p><button class="primary" id="begin">Iniciar apresentação <span aria-hidden="true">→</span></button></div>
           <div class="agenda-panel">
             <div class="panel-heading">Nesta apresentação <span>04 TÓPICOS</span></div>
-            <a href="#cenario-i"><span class="agenda-number">I</span><div><h2>Fase I durante todo o ano</h2><p>Janeiro a dezembro de 2027.</p></div><span aria-hidden="true">→</span></a>
-            <a href="#cenario-ii"><span class="agenda-number">II</span><div><h2>Implantação em três fases</h2><p>3 meses na Fase I · 3 na II · 6 na III.</p></div><span aria-hidden="true">→</span></a>
+            <a href="#cenario-i"><span class="agenda-number">I</span><div><h2>Implantação em três fases</h2><p>3 meses na Fase I · 3 na II · 6 na III.</p></div><span aria-hidden="true">→</span></a>
+            <a href="#cenario-ii"><span class="agenda-number">II</span><div><h2>Fase I durante todo o ano</h2><p>Janeiro a dezembro de 2027.</p></div><span aria-hidden="true">→</span></a>
             <a href="#comparativo"><span class="agenda-number">⇄</span><div><h2>Comparativo e simulação</h2><p>Distribuição de meses por fase.</p></div><span aria-hidden="true">→</span></a>
             <a href="#heal"><span class="agenda-number">H</span><div><h2>HEAL</h2><p>PLOA e custeio mensal atual.</p></div><span aria-hidden="true">→</span></a>
           </div>
@@ -48,14 +48,14 @@
       <section class="slide scenario-slide" id="cenario-i" data-pauta="I" data-min-width="1120" aria-labelledby="title-1" hidden>
         <div class="eyebrow">POLICLÍNICAS / JANEIRO A DEZEMBRO DE 2027</div>
         <h1 id="title-1">Cenário I</h1>
-        <p class="subtitle">Fase I durante os 12 meses de 2027.</p>
-        <div id="scenario-first" class="scenario-report"></div>
+        <p class="subtitle">Fase I por 3 meses, Fase II por 3 meses e Fase III por 6 meses.</p>
+        <div id="scenario-phased" class="scenario-report"></div>
       </section>
       <section class="slide scenario-slide" id="cenario-ii" data-pauta="II" data-min-width="1120" aria-labelledby="title-2" hidden>
         <div class="eyebrow">POLICLÍNICAS / JANEIRO A DEZEMBRO DE 2027</div>
         <h1 id="title-2">Cenário II</h1>
-        <p class="subtitle">Fase I por 3 meses, Fase II por 3 meses e Fase III por 6 meses.</p>
-        <div id="scenario-phased" class="scenario-report"></div>
+        <p class="subtitle">Fase I durante os 12 meses de 2027.</p>
+        <div id="scenario-first" class="scenario-report"></div>
       </section>
       <section class="slide scenario-slide simulation-slide" id="comparativo" data-pauta="SIM" data-min-width="1120" aria-labelledby="title-3" hidden>
         <div class="eyebrow">POLICLÍNICAS / SIMULAÇÃO PARA 2027</div>
@@ -70,8 +70,8 @@
               <label for="months-3"><span class="phase-dot phase-3" aria-hidden="true"></span>Fase III<input id="months-3" type="number" min="0" max="12" step="1" value="0" inputmode="numeric" aria-describedby="simulation-validation"><span>meses</span></label>
             </div>
             <div class="scenario-presets" role="group" aria-label="Distribuições prontas de meses">
-              <button type="button" data-months="12,0,0" aria-pressed="false">Cenário I <small>12 / 0 / 0</small></button>
-              <button type="button" data-months="3,3,6" aria-pressed="false">Cenário II <small>3 / 3 / 6</small></button>
+              <button type="button" data-months="3,3,6" aria-pressed="false">Cenário I <small>3 / 3 / 6</small></button>
+              <button type="button" data-months="12,0,0" aria-pressed="false">Cenário II <small>12 / 0 / 0</small></button>
               <button type="button" data-months="6,6,0" aria-pressed="true">6 + 6 meses <small>6 / 6 / 0</small></button>
             </div>
           </div>
@@ -87,7 +87,7 @@
       <section class="slide heal-slide" id="heal" data-pauta="HEAL" data-min-width="1000" aria-labelledby="title-4" hidden>
         <div class="eyebrow">HEAL / CUSTEIO MENSAL</div>
         <h1 id="title-4">HEAL</h1>
-        <p class="subtitle">Comparação entre o valor mensal da PLOA 2027 e o custeio mensal atual.</p>
+        <p class="subtitle">Redução prevista desde janeiro, com início efetivo do desconto em maio/2027.</p>
         <div class="heal-dates" aria-label="Datas do HEAL">
           <div><span>Vencimento</span><time datetime="2027-04-25">25/04/2027</time></div>
           <div><span>Primeiro Ofício de Aceite</span><time datetime="2026-02-06">06/02/2026</time></div>

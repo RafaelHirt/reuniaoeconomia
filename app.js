@@ -1,4 +1,4 @@
-import { UNITS, HEAL, PHASES, DP_TOTALS, HEMODIALYSIS_TOTAL, SCENARIOS, money, quantity, percentage, calculateScenario, schedule, validMonths } from './budget.js';
+import { UNITS, HEAL, PHASES, DP_TOTALS, HEMODIALYSIS_TOTAL, SCENARIOS, money, quantity, percentage, calculateScenario, calculateHealCoverage, schedule, validMonths } from './budget.js';
 
 const slides = [...document.querySelectorAll('.slide')];
 const links = [...document.querySelectorAll('.sidebar [data-slide]')];
@@ -12,7 +12,7 @@ const backdrop = document.querySelector('#menu-backdrop');
 let current = 0;
 
 function budgetMetric(label, value, detail, emphasis = false, key = '') {
-  return `<div class="budget-metric${emphasis ? ' budget-metric-emphasis' : ''}"><span>${label}</span><strong${key ? ` data-total="${key}"` : ''}>${money(value)}</strong><small>${detail}</small></div>`;
+  return `<div class="budget-metric${emphasis ? ' budget-metric-emphasis' : ''}"><span>${label}</span><strong${key ? ` data-total="${key}"` : ''}>${money(value)}</strong>${detail ? `<small>${detail}</small>` : ''}</div>`;
 }
 
 function renderTimeline(result) {
@@ -22,7 +22,7 @@ function renderTimeline(result) {
 function renderScenario(target, result, showMetrics = true, costLabel = 'Termo Aditivo das fases simuladas') {
   const methodId = `${target.id}-method`;
   const formula = result.months.flatMap((months, phase) => months ? [`(${months} × custeio mensal da ${PHASES[phase]})`] : []).join(' + ');
-  target.innerHTML = `${showMetrics ? `<div class="budget-metrics">${budgetMetric('PLOA 2027 · anual', result.ploa, 'Seis policlínicas · valor mensal × 12', false, 'ploa')}${budgetMetric(`${costLabel} · anual`, result.needed, 'Conforme a distribuição de fases', false, 'needed')}${budgetMetric('Acréscimo à PLOA · anual', result.difference, `${percentage(result.increase)} acima da PLOA`, true, 'difference')}</div>` : ''}
+  target.innerHTML = `${showMetrics ? `<div class="budget-metrics">${budgetMetric('PLOA 2027 · anual', result.ploa, 'Seis policlínicas · valor mensal × 12', false, 'ploa')}${budgetMetric(`${costLabel} · anual`, result.needed, '', false, 'needed')}${budgetMetric('Acréscimo à PLOA · anual', result.difference, `${percentage(result.increase)} acima da PLOA`, true, 'difference')}</div>` : ''}
     ${renderTimeline(result)}
     <div class="scenario-columns">
       <section class="budget-table-card">
@@ -36,7 +36,7 @@ function renderScenario(target, result, showMetrics = true, costLabel = 'Termo A
         <div class="table-card-heading"><h2>DP por fase e Hemodiálise</h2><span>QUANTIDADE</span></div>
         <p class="budget-scroll-hint"><span aria-hidden="true">↔</span> Deslize para ver todas as colunas.</p>
         <div class="budget-table-scroll" role="region" aria-label="DP por fase e quantidade de Hemodiálise conforme a planilha" tabindex="0">
-          <table class="dp-table"><caption class="sr-only">DP previstas por unidade e fase, com a quantidade de Hemodiálise informada na planilha. Hemodiálise não está discriminada por fase.</caption><colgroup><col class="dp-unit-col"><col span="3" class="dp-phase-col"><col class="hemodialysis-col"></colgroup><thead><tr><th scope="col">Unidade</th>${PHASES.map((phase, i) => `<th scope="col" class="${result.months[i] ? 'active-phase' : 'inactive-phase'}">${phase}<small>${result.months[i]} ${result.months[i] === 1 ? 'mês' : 'meses'}</small></th>`).join('')}<th scope="col" class="hemodialysis-cell">Hemodiálise<small>Planilha</small></th></tr></thead><tbody>${UNITS.map(unit => `<tr><th scope="row">${unit.name}</th>${unit.dp.map((value, i) => `<td class="${result.months[i] ? 'active-phase' : 'inactive-phase'}">${value}</td>`).join('')}<td class="hemodialysis-cell">${quantity(unit.hemodialysis)}</td></tr>`).join('')}</tbody><tfoot><tr><th scope="row">Total</th>${DP_TOTALS.map((value, i) => `<td class="${result.months[i] ? 'active-phase' : 'inactive-phase'}">${value}</td>`).join('')}<td class="hemodialysis-cell">${quantity(HEMODIALYSIS_TOTAL)}</td></tr></tfoot></table>
+          <table class="dp-table"><caption class="sr-only">DP previstas por unidade e fase, com a quantidade de Hemodiálise informada na planilha. Hemodiálise não está discriminada por fase.</caption><colgroup><col class="dp-unit-col"><col span="3" class="dp-phase-col"><col class="hemodialysis-col"></colgroup><thead><tr><th scope="col">Unidade</th>${PHASES.map((phase, i) => `<th scope="col" class="${result.months[i] ? 'active-phase' : 'inactive-phase'}">${phase}<small>${result.months[i]} ${result.months[i] === 1 ? 'mês' : 'meses'}</small></th>`).join('')}<th scope="col" class="hemodialysis-cell">Hemodiálise</th></tr></thead><tbody>${UNITS.map(unit => `<tr><th scope="row">${unit.name}</th>${unit.dp.map((value, i) => `<td class="${result.months[i] ? 'active-phase' : 'inactive-phase'}">${value}</td>`).join('')}<td class="hemodialysis-cell">${quantity(unit.hemodialysis)}</td></tr>`).join('')}</tbody><tfoot><tr><th scope="row">Total</th>${DP_TOTALS.map((value, i) => `<td class="${result.months[i] ? 'active-phase' : 'inactive-phase'}">${value}</td>`).join('')}<td class="hemodialysis-cell">${quantity(HEMODIALYSIS_TOTAL)}</td></tr></tfoot></table>
         </div>
       </section>
     </div>
@@ -45,8 +45,8 @@ function renderScenario(target, result, showMetrics = true, costLabel = 'Termo A
 
 function renderComparison(simulation) {
   const comparisons = [
-    { key: 'first', label: 'Cenário I', result: calculateScenario(SCENARIOS.first) },
-    { key: 'phased', label: 'Cenário II', result: calculateScenario(SCENARIOS.phased) },
+    { key: 'phased', label: 'Cenário I', result: calculateScenario(SCENARIOS.phased) },
+    { key: 'first', label: 'Cenário II', result: calculateScenario(SCENARIOS.first) },
     { key: 'simulation', label: 'Sua simulação', result: simulation }
   ];
   document.querySelector('#scenario-comparison').innerHTML = `<div class="comparison-heading"><h2>Comparação anual</h2><span>PLOA 2027: <strong>${money(simulation.ploa)}</strong></span></div><p class="budget-scroll-hint"><span aria-hidden="true">↔</span> Deslize para comparar os valores.</p><div class="budget-table-scroll comparison-scroll" role="region" aria-label="Comparação dos dois cenários e da simulação" tabindex="0"><table class="scenario-summary-table"><caption class="sr-only">Comparação anual para as seis policlínicas, com a mesma PLOA em todos os cenários.</caption><thead><tr><th scope="col">Cenário</th><th scope="col">Meses nas fases I / II / III</th><th scope="col">Termo Aditivo · anual</th><th scope="col">Acréscimo à PLOA</th><th scope="col">Acréscimo %</th></tr></thead><tbody>${comparisons.map(({ key, label, result }) => `<tr data-scenario-row="${key}" class="${key === 'simulation' ? 'simulation-row' : ''}"><th scope="row">${label}</th><td>${result.months.join(' / ')}</td><td data-total="needed">${money(result.needed)}</td><td data-total="difference">${money(result.difference)}</td><td>${percentage(result.increase)}</td></tr>`).join('')}</tbody></table></div>`;
@@ -91,8 +91,15 @@ function initializeSimulation() {
 function initializeBudgetViews() {
   renderScenario(document.querySelector('#scenario-first'), calculateScenario(SCENARIOS.first), true, 'Termo Aditivo 1º Fase');
   renderScenario(document.querySelector('#scenario-phased'), calculateScenario(SCENARIOS.phased), true, 'Termo Aditivo Fases RD');
-  const difference = HEAL.current - HEAL.ploa;
-  document.querySelector('#heal-report').innerHTML = `<div class="budget-metrics heal-metrics">${budgetMetric('PLOA 2027 · mensal', HEAL.ploa, 'Valor informado para o HEAL', false, 'ploa')}${budgetMetric('Custeio atual · mensal', HEAL.current, 'Valor mensal atual do HEAL', false, 'current')}${budgetMetric('Diferença mensal', difference, `${percentage(difference / HEAL.ploa)} acima da PLOA`, true, 'difference')}</div><div class="heal-chart" role="img" aria-label="PLOA mensal de ${money(HEAL.ploa)} e custeio atual mensal de ${money(HEAL.current)}"><div class="heal-bar-row"><span>PLOA 2027</span><div class="heal-bar-track"><div class="heal-bar ploa-bar" style="width:${HEAL.ploa / HEAL.current * 100}%"></div></div><strong>${money(HEAL.ploa)}</strong></div><div class="heal-bar-row"><span>Custeio atual</span><div class="heal-bar-track"><div class="heal-bar current-bar" style="width:100%"></div></div><strong>${money(HEAL.current)}</strong></div></div><div class="heal-difference"><div><span>DIFERENÇA MENSAL · HEAL</span><p>Valor atual − valor PLOA</p></div><strong>${money(difference)}</strong></div><p class="heal-note">Valores mensais. O HEAL é apresentado separadamente dos cenários das seis policlínicas.</p>`;
+  const coverage = calculateHealCoverage();
+  const periods = [
+    { label: 'Janeiro a abril/2027', detail: '4 meses com o custeio atual', ...coverage.periods[0] },
+    { label: 'Maio a dezembro/2027', detail: '8 meses após o desconto', ...coverage.periods[1] }
+  ];
+  document.querySelector('#heal-report').innerHTML = `<div class="budget-metrics heal-metrics">${budgetMetric('PLOA 2027 · mensal', HEAL.ploa, 'Redução projetada desde janeiro', false, 'ploa')}${budgetMetric('Custeio atual · mensal', HEAL.current, 'Mantido de janeiro a abril', false, 'current')}${budgetMetric('Redução mensal projetada', coverage.monthlyReduction, 'Desconto a partir de maio/2027', true, 'difference')}</div>
+    <div class="heal-difference heal-coverage"><div><span>COBERTURA ADICIONAL · JANEIRO A ABRIL/2027</span><h2>Recursos adicionais a encontrar</h2><p>${coverage.monthsBeforeReduction} meses × ${money(coverage.monthlyReduction)} de redução mensal prevista</p></div><strong data-coverage="additional">${money(coverage.additional)}</strong></div>
+    <section class="budget-table-card heal-impact-card"><div class="table-card-heading"><h2>Impacto no orçamento de 2027</h2><span>VALORES POR PERÍODO</span></div><p class="budget-scroll-hint"><span aria-hidden="true">↔</span> Deslize para consultar todos os valores.</p><div class="budget-table-scroll" role="region" aria-label="Custeio do HEAL antes e depois do desconto de maio de 2027" tabindex="0"><table class="heal-impact-table" aria-describedby="heal-coverage-method"><caption class="sr-only">Cobertura adicional para manter o custeio atual de janeiro a abril de 2027, com redução a partir de maio.</caption><colgroup><col class="heal-period-col"><col span="3"></colgroup><thead><tr><th scope="col">Período</th><th scope="col">Previsto na PLOA</th><th scope="col">Custeio estimado</th><th scope="col">Cobertura adicional</th></tr></thead><tbody>${periods.map(period => `<tr><th scope="row">${period.label}<small>${period.detail}</small></th><td data-label="Previsto na PLOA">${money(period.ploa)}</td><td data-label="Custeio estimado">${money(period.needed)}</td><td data-label="Cobertura adicional">${money(period.difference)}</td></tr>`).join('')}</tbody><tfoot><tr><th scope="row">Total de 2027</th><td data-label="Previsto na PLOA" data-coverage="ploa">${money(coverage.ploa)}</td><td data-label="Custeio estimado" data-coverage="needed">${money(coverage.needed)}</td><td data-label="Cobertura adicional" data-coverage="additional">${money(coverage.additional)}</td></tr></tfoot></table></div></section>
+    <p class="heal-note" id="heal-coverage-method">A redução foi projetada desde janeiro/2027. Como o desconto começa em maio, a cobertura considera os quatro meses completos de janeiro a abril com o custeio atual. O HEAL é apresentado separadamente dos cenários das policlínicas.</p>`;
   initializeSimulation();
 }
 
@@ -133,7 +140,7 @@ function showSlide(index, moveFocus = false) {
   document.querySelector('.progress').setAttribute('aria-valuemax', String(slides.length));
   previous.disabled = current === 0;
   next.disabled = current === slides.length - 1;
-  const meetingName = current === 0 ? 'Reunião SUPECC' : 'Reunião com a SUBPAS';
+  const meetingName = current === 0 ? 'Reunião SUBPAS' : 'Reunião com a SUBPAS';
   document.querySelector('#meeting-name').textContent = meetingName;
   document.querySelector('#meeting-partner').textContent = current === 0 ? 'SES-GO / SUPECC' : 'SES-GO / SUBPAS';
   document.title = `${slides[current].querySelector('h1').textContent.replace(/\s+/g, ' ').trim()} • ${meetingName}`;
