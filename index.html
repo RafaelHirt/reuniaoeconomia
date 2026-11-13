@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#123e30">
-  <meta name="description" content="Reunião SES-GO e Economia: custeio atual das policlínicas, LOA 2027 e custeio mensal no aditivo da 1ª fase, com totais e diferenças.">
-  <title>SES-GO • Custeio das policlínicas</title>
+  <meta name="description" content="Cenários de custeio das policlínicas para 2027: fases, DP previstas, diferença em relação à PLOA, simulação de meses e custeio mensal do HEAL.">
+  <title>SES-GO • Cenários de custeio 2027</title>
   <link rel="stylesheet" href="styles.css">
-  <script src="app.js" defer></script>
+  <script src="app.js" type="module"></script>
 </head>
 <body class="presentation-mode">
   <aside class="sidebar" id="agenda-menu">
@@ -16,9 +16,13 @@
     <div class="rail-label">PAUTA DA REUNIÃO</div>
     <nav aria-label="Tópicos da apresentação">
       <a href="#abertura" data-slide="0"><span>01</span>Visão geral</a>
-      <div class="nav-group">CUSTEIO DAS POLICLÍNICAS</div>
-      <a href="#comparativo" data-slide="1"><span>02</span>Comparativo mensal</a>
-      <a href="#encerramento" data-slide="2"><span>03</span>Encerramento</a>
+      <div class="nav-group">POLICLÍNICAS · PLOA 2027</div>
+      <a href="#cenario-i" data-slide="1"><span>02</span>Cenário I · Fase I por 12 meses</a>
+      <a href="#cenario-ii" data-slide="2"><span>03</span>Cenário II · Três fases</a>
+      <a href="#comparativo" data-slide="3"><span>04</span>Comparativo e simulação</a>
+      <div class="nav-group">CUSTEIO MENSAL</div>
+      <a href="#heal" data-slide="4"><span>05</span>HEAL</a>
+      <a href="#encerramento" data-slide="5"><span>06</span>Encerramento</a>
     </nav>
     <div class="rail-bottom"><span class="tiny-dot"></span> Alinhamento institucional<small>SES-GO / ECONOMIA</small></div>
   </aside>
@@ -30,66 +34,69 @@
       <section class="slide cover" id="abertura" aria-labelledby="title-0">
         <img class="cover-logo" src="assets/logo-ses-escura.png" alt="SUS — Secretaria de Estado da Saúde — Estado de Goiás" width="3338" height="675">
         <div class="cover-grid">
-          <div><span class="pill">PAUTA DA REUNIÃO</span><h1 id="title-0">Saúde &amp;<br><em>Economia.</em></h1><p class="cover-description">Custeio das policlínicas: valores atuais,<br class="desktop"> LOA 2027 e aditivo — 1ª fase.</p><button class="primary" id="begin">Iniciar apresentação <span aria-hidden="true">→</span></button></div>
+          <div><span class="pill">PROGRAMAÇÃO ORÇAMENTÁRIA · 2027</span><h1 id="title-0">Saúde &amp;<br><em>Economia.</em></h1><p class="cover-description">Cenários de custeio das policlínicas<br class="desktop"> e programação orçamentária do HEAL.</p><button class="primary" id="begin">Iniciar apresentação <span aria-hidden="true">→</span></button></div>
           <div class="agenda-panel">
-            <div class="panel-heading">Nesta apresentação <span>06 UNIDADES</span></div>
-            <a href="#comparativo"><span class="agenda-number">I</span><div><h2>Comparativo de custeio mensal</h2><p>Custeio Mensal Atual · LOA 2027 · Aditivo — 1ª fase</p></div><span aria-hidden="true">→</span></a>
-            <div class="agenda-scope"><span>POLICLÍNICAS</span><p>Formosa · Goianésia · Goiás<br>Posse · Quirinópolis · SLMB</p></div>
+            <div class="panel-heading">Nesta apresentação <span>04 TÓPICOS</span></div>
+            <a href="#cenario-i"><span class="agenda-number">I</span><div><h2>Fase I durante todo o ano</h2><p>Janeiro a dezembro de 2027.</p></div><span aria-hidden="true">→</span></a>
+            <a href="#cenario-ii"><span class="agenda-number">II</span><div><h2>Implantação em três fases</h2><p>3 meses na Fase I · 3 na II · 6 na III.</p></div><span aria-hidden="true">→</span></a>
+            <a href="#comparativo"><span class="agenda-number">⇄</span><div><h2>Comparativo e simulação</h2><p>Distribuição de meses por fase.</p></div><span aria-hidden="true">→</span></a>
+            <a href="#heal"><span class="agenda-number">H</span><div><h2>HEAL</h2><p>PLOA e custeio mensal atual.</p></div><span aria-hidden="true">→</span></a>
           </div>
         </div>
         <div class="cover-footer"><span>TERMOS ADITIVOS &amp; PROGRAMAÇÃO ORÇAMENTÁRIA</span><span>Material de apoio à reunião</span></div>
       </section>
-      <section class="slide cost-slide" id="comparativo" data-pauta="I" aria-labelledby="title-1" hidden>
-        <div class="eyebrow">POLICLÍNICAS / CUSTEIO MENSAL</div>
-        <h1 id="title-1">Custeio das policlínicas</h1>
-        <p class="subtitle">Custeio Mensal Atual, LOA 2027 e custeio mensal no aditivo — 1ª fase.</p>
-        <fieldset class="cost-comparison" aria-describedby="cost-comparison-hint" hidden>
-          <legend>Calcular diferença mensal</legend>
-          <div class="cost-comparison-fields">
-            <label class="cost-select-label" for="cost-first">Primeiro valor
-              <select id="cost-first">
-                <option value="atual" selected>Custeio Mensal Atual</option>
-                <option value="loa">Custeio Mensal LOA 2027</option>
-                <option value="aditivo">Custeio no aditivo — 1ª fase</option>
-              </select>
-            </label>
-            <span class="cost-minus" aria-hidden="true">−</span>
-            <label class="cost-select-label" for="cost-second">Subtrair
-              <select id="cost-second">
-                <option value="atual">Custeio Mensal Atual</option>
-                <option value="loa" selected>Custeio Mensal LOA 2027</option>
-                <option value="aditivo">Custeio no aditivo — 1ª fase</option>
-              </select>
-            </label>
-            <button type="button" id="cost-invert" class="cost-invert"><span aria-hidden="true">⇄</span> Inverter ordem</button>
+      <section class="slide scenario-slide" id="cenario-i" data-pauta="I" data-min-width="1120" aria-labelledby="title-1" hidden>
+        <div class="eyebrow">POLICLÍNICAS / JANEIRO A DEZEMBRO DE 2027</div>
+        <h1 id="title-1">Cenário I</h1>
+        <p class="subtitle">Fase I durante os 12 meses de 2027.</p>
+        <div id="scenario-first" class="scenario-report"></div>
+      </section>
+      <section class="slide scenario-slide" id="cenario-ii" data-pauta="II" data-min-width="1120" aria-labelledby="title-2" hidden>
+        <div class="eyebrow">POLICLÍNICAS / JANEIRO A DEZEMBRO DE 2027</div>
+        <h1 id="title-2">Cenário II</h1>
+        <p class="subtitle">Fase I por 3 meses, Fase II por 3 meses e Fase III por 6 meses.</p>
+        <div id="scenario-phased" class="scenario-report"></div>
+      </section>
+      <section class="slide scenario-slide simulation-slide" id="comparativo" data-pauta="SIM" data-min-width="1120" aria-labelledby="title-3" hidden>
+        <div class="eyebrow">POLICLÍNICAS / SIMULAÇÃO PARA 2027</div>
+        <h1 id="title-3">Comparativo de cenários</h1>
+        <p class="subtitle">Distribua os 12 meses entre as fases e veja o acréscimo necessário sobre a PLOA.</p>
+        <fieldset id="simulation-controls" class="simulation-controls" hidden>
+          <legend>Meses em cada fase</legend>
+          <div class="simulation-toolbar">
+            <div class="month-fields">
+              <label for="months-1"><span class="phase-dot phase-1" aria-hidden="true"></span>Fase I<input id="months-1" type="number" min="0" max="12" step="1" value="6" inputmode="numeric" aria-describedby="simulation-validation"><span>meses</span></label>
+              <label for="months-2"><span class="phase-dot phase-2" aria-hidden="true"></span>Fase II<input id="months-2" type="number" min="0" max="12" step="1" value="6" inputmode="numeric" aria-describedby="simulation-validation"><span>meses</span></label>
+              <label for="months-3"><span class="phase-dot phase-3" aria-hidden="true"></span>Fase III<input id="months-3" type="number" min="0" max="12" step="1" value="0" inputmode="numeric" aria-describedby="simulation-validation"><span>meses</span></label>
+            </div>
+            <div class="scenario-presets" role="group" aria-label="Distribuições prontas de meses">
+              <button type="button" data-months="12,0,0" aria-pressed="false">Cenário I <small>12 / 0 / 0</small></button>
+              <button type="button" data-months="3,3,6" aria-pressed="false">Cenário II <small>3 / 3 / 6</small></button>
+              <button type="button" data-months="6,6,0" aria-pressed="true">6 + 6 meses <small>6 / 6 / 0</small></button>
+            </div>
           </div>
-          <p id="cost-comparison-hint">Resultado negativo indica que o primeiro valor é menor que o segundo.</p>
+          <p id="simulation-validation" role="status">12 de 12 meses distribuídos. As fases seguem a ordem I → II → III.</p>
         </fieldset>
-        <p class="cost-scroll-hint"><span aria-hidden="true">↔</span> Deslize para consultar todas as colunas.</p>
-        <div class="cost-table-scroll" role="region" aria-label="Comparativo de custeio das seis policlínicas" tabindex="0">
-          <table class="cost-table" aria-describedby="cost-formula">
-            <caption class="sr-only" id="cost-caption">Valores mensais em reais, com total de cada coluna. Diferença mensal: Custeio Mensal Atual menos Custeio Mensal LOA 2027.</caption>
-            <colgroup><col class="cost-unit-col"><col span="3" class="cost-amount-col"><col class="cost-difference-col"></colgroup>
-            <thead><tr><th scope="col">Unidade</th><th scope="col">Custeio Mensal Atual</th><th scope="col">Custeio Mensal LOA 2027</th><th scope="col">Custeio mensal no<br>aditivo — 1ª fase</th><th scope="col">Diferença mensal<br><span id="cost-difference-formula">Atual − LOA 2027</span></th></tr></thead>
-            <tbody>
-              <tr><th scope="row">P. Formosa</th><td>R$ 2.401.345,13</td><td>R$ 1.908.333,33</td><td>R$ 2.058.789,40</td><td>R$ 493.011,80</td></tr>
-              <tr><th scope="row">P. Goianésia</th><td>R$ 2.280.862,07</td><td>R$ 1.875.000,00</td><td>R$ 1.958.267,82</td><td>R$ 405.862,07</td></tr>
-              <tr><th scope="row">P. Goiás</th><td>R$ 2.677.633,67</td><td>R$ 1.983.333,33</td><td>R$ 2.093.186,93</td><td>R$ 694.300,34</td></tr>
-              <tr><th scope="row">P. Posse</th><td>R$ 3.069.301,80</td><td>R$ 2.341.666,67</td><td>R$ 2.627.874,89</td><td>R$ 727.635,13</td></tr>
-              <tr><th scope="row">P. Quirinópolis</th><td>R$ 2.327.041,25</td><td>R$ 1.933.333,33</td><td>R$ 2.088.387,67</td><td>R$ 393.707,92</td></tr>
-              <tr><th scope="row">P. SLMB</th><td>R$ 1.966.844,75</td><td>R$ 1.791.666,67</td><td>R$ 1.860.858,34</td><td>R$ 175.178,08</td></tr>
-            </tbody>
-            <tfoot><tr><th scope="row">Total</th><td>R$ 14.723.028,67</td><td>R$ 11.833.333,33</td><td>R$ 12.687.365,05</td><td>R$ 2.889.695,34</td></tr></tfoot>
-          </table>
+        <div id="simulation-results">
+          <div id="scenario-comparison"></div>
+          <div id="scenario-simulation" class="scenario-report"></div>
         </div>
-        <div class="cost-summary" role="status" aria-live="polite" aria-atomic="true"><div><span class="cost-summary-label">DIFERENÇA TOTAL MENSAL</span><p id="cost-formula">Custeio Mensal Atual − Custeio Mensal LOA 2027</p></div><strong id="cost-total">R$ 2.889.695,34</strong></div>
+        <p id="simulation-print-error" class="simulation-print-error" hidden>Simulação não calculada. Distribua exatamente 12 meses entre as fases.</p>
+        <div id="simulation-announcement" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
       </section>
-      <section class="slide closing-slide" id="encerramento" aria-labelledby="title-2" hidden>
-        <div class="closing-card"><span class="closing-kicker">SECRETARIA DE ESTADO DA SAÚDE DE GOIÁS</span><div class="closing-message"><span class="closing-rule" aria-hidden="true"></span><h1 id="title-2">Obrigado.</h1><p>Reunião com a Economia</p></div><img class="closing-logo" src="assets/logo-ses-clara.png" alt="SUS — Secretaria de Estado da Saúde — Estado de Goiás" width="3338" height="675"></div>
+      <section class="slide heal-slide" id="heal" data-pauta="HEAL" data-min-width="1000" aria-labelledby="title-4" hidden>
+        <div class="eyebrow">HEAL / CUSTEIO MENSAL</div>
+        <h1 id="title-4">HEAL</h1>
+        <p class="subtitle">Comparação entre o valor mensal da PLOA 2027 e o custeio mensal atual.</p>
+        <div id="heal-report"></div>
       </section>
+      <section class="slide closing-slide" id="encerramento" aria-labelledby="title-5" hidden>
+        <div class="closing-card"><span class="closing-kicker">SECRETARIA DE ESTADO DA SAÚDE DE GOIÁS</span><div class="closing-message"><span class="closing-rule" aria-hidden="true"></span><h1 id="title-5">Obrigado.</h1><p>Reunião com a Economia</p></div><img class="closing-logo" src="assets/logo-ses-clara.png" alt="SUS — Secretaria de Estado da Saúde — Estado de Goiás" width="3338" height="675"></div>
+      </section>
+      <noscript><p class="noscript-note">Ative o JavaScript no navegador para visualizar os cenários e usar a simulação.</p></noscript>
     </main>
-    <footer class="controls"><div><span id="counter">01 / 03</span><span id="section-name">Visão geral</span></div><div class="progress" aria-label="Progresso da apresentação" role="progressbar" aria-valuemin="1" aria-valuemax="3" aria-valuenow="1"><span id="progress-fill"></span></div><nav class="pauta-shortcuts" aria-label="Navegação entre pautas"><a href="#comparativo" data-pauta-link="I"><span>I</span> Comparativo de custeio</a></nav><div class="navigation"><span class="key-hint">Navegue com ← →</span><button id="previous" aria-label="Tela anterior">←</button><button id="next" aria-label="Próxima tela"><span>Próxima</span> →</button></div></footer>
-    <div class="material-note">Valores mensais em reais, conforme as tabelas fornecidas para a reunião.</div>
+    <footer class="controls"><div><span id="counter">01 / 06</span><span id="section-name">Visão geral</span></div><div class="progress" aria-label="Progresso da apresentação" role="progressbar" aria-valuemin="1" aria-valuemax="6" aria-valuenow="1"><span id="progress-fill"></span></div><nav class="pauta-shortcuts" aria-label="Navegação entre pautas"><a href="#cenario-i" data-pauta-link="I"><span>I</span> Cenário I</a><a href="#cenario-ii" data-pauta-link="II"><span>II</span> Cenário II</a><a href="#comparativo" data-pauta-link="SIM"><span>⇄</span> Comparativo</a><a href="#heal" data-pauta-link="HEAL">HEAL</a></nav><div class="navigation"><span class="key-hint">Navegue com ← →</span><button id="previous" aria-label="Tela anterior">←</button><button id="next" aria-label="Próxima tela"><span>Próxima</span> →</button></div></footer>
+    <div class="material-note">Valores e DP fornecidos para a reunião. Custos anuais calculados a partir dos valores mensais, sem reajustes.</div>
   </div>
 </body>
 </html>
