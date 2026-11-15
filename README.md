@@ -28,3 +28,27 @@ Os dados recebidos contêm números de processos, sem URLs individuais ou IDs in
 A base é estática. Para atualizar dados ou links, editar `data.json` e publicar uma nova versão. Fonte dos dados: informações fornecidas pelo usuário.
 
 O botão **Voltar à visão geral**, junto aos gráficos quando há filtros, restaura todos os processos e preserva a ordenação escolhida. Nos detalhes, **Voltar ao painel** fecha a janela e mantém a seleção. Situações com um processo e o cartão da glosa suspensa mostram o número SEI com acesso ao sistema. A caixa de informações das colunas também inclui **Abrir SEI interno**, acessível com mouse ou teclado. Esses acessos abrem outra aba e copiam o número para pesquisa, respeitando URLs individuais quando cadastradas.
+
+
+## Fluxo de monitoramento e decisão
+
+Os detalhes de cada processo incluem uma linha de oito etapas: relatório preliminar; manifestação da Parceria Privada; manifestação SPAIS; manifestação SUREG; relatório conclusivo; recurso da Parceria Privada; manifestação da GMAE/CG; decisão Gabinete. Selecionar uma etapa exibe sua explicação, sem alterar o andamento nem a fase registrada.
+
+A fase é definida por **processo** em `data.json`, no campo inteiro `workflowStep` (1 a 8). Não é inferida pelo texto do status: dois processos com o mesmo andamento podem estar em fases diferentes. Se o campo estiver ausente ou inválido, o painel mostra “Etapa não indicada”. Ao atualizar a fase, manter o andamento e o número SEI do período correspondente.
+
+Fases fornecidas pelo usuário:
+
+| Período | Processo | Fase |
+| --- | --- | ---: |
+| Ago–dez/2024 | 202500010000059 | 8 |
+| Jan–mar/2025 | 202500010036854 | 7 |
+| Abr–jun/2025 | 202500010057071 | 7 |
+| Jul–set/2025 | 202500010086387 | 3 |
+| Out–dez/2025 | 202600010009060 | 5 |
+| Jan–mar/2026 | 202600010045963 | 5 |
+| Abr–jun/2026 | 202600010056169 | 1 |
+| Jul–set/2026 | 202600010089970 | 1 |
+
+As cores distinguem etapas anteriores na sequência, fase atual e etapas seguintes. Não são um histórico de datas ou uma comprovação independente da conclusão de cada etapa. A glosa suspensa fica na fase 8, conforme a informação do usuário, com a suspensão destacada em âmbar; não aparece como processo concluído.
+
+A janela amplia o fluxo no computador e apresenta as etapas na vertical em telas menores. No celular, a explicação aparece junto à etapa selecionada. Voltar e Abrir SEI permanecem disponíveis durante a leitura. A fase atual também aparece na caixa do gráfico de valores. Um botão de retorno com destaque aparece ao lado de Imprimir quando há filtros ativos e restaura a visão geral preservando a ordenação.

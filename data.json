@@ -9,7 +9,8 @@
     "group": "suspended",
     "status": "Glosa suspensa",
     "description": "Glosa suspensa",
-    "situation": "suspended"
+    "situation": "suspended",
+    "workflowStep": 8
   },
   {
     "id": "202500010036854",
@@ -21,7 +22,8 @@
     "group": "dispatch",
     "status": "Despacho em elaboração",
     "description": "Despacho COMACG em elaboração após análise da SPAIS e SUREG",
-    "situation": "dispatch-analysis"
+    "situation": "dispatch-analysis",
+    "workflowStep": 7
   },
   {
     "id": "202500010057071",
@@ -33,7 +35,8 @@
     "group": "dispatch",
     "status": "Despacho em elaboração",
     "description": "Despacho COMACG em elaboração – análise de recurso hierárquico",
-    "situation": "dispatch-appeal"
+    "situation": "dispatch-appeal",
+    "workflowStep": 7
   },
   {
     "id": "202500010086387",
@@ -45,7 +48,8 @@
     "group": "waiting",
     "status": "Aguardando despacho SPAIS",
     "description": "Aguardando despacho SPAIS",
-    "situation": "waiting"
+    "situation": "waiting",
+    "workflowStep": 3
   },
   {
     "id": "202600010009060",
@@ -57,7 +61,8 @@
     "group": "dispatch",
     "status": "Despacho em elaboração",
     "description": "Despacho COMACG em elaboração após análise da SPAIS e SUREG",
-    "situation": "dispatch-analysis"
+    "situation": "dispatch-analysis",
+    "workflowStep": 5
   },
   {
     "id": "202600010045963",
@@ -69,7 +74,8 @@
     "group": "report",
     "status": "Relatório em elaboração",
     "description": "Relatório COMACG em elaboração após análise da SPAIS e SUREG",
-    "situation": "report-analysis"
+    "situation": "report-analysis",
+    "workflowStep": 5
   },
   {
     "id": "202600010056169",
@@ -81,7 +87,8 @@
     "group": "report",
     "status": "Relatório preliminar em elaboração",
     "description": "Relatório preliminar COMACG em elaboração",
-    "situation": "report-preliminary"
+    "situation": "report-preliminary",
+    "workflowStep": 1
   },
   {
     "id": "202600010089970",
@@ -93,6 +100,7 @@
     "group": "report",
     "status": "Relatório preliminar em elaboração",
     "description": "Relatório preliminar COMACG em elaboração",
-    "situation": "report-preliminary"
+    "situation": "report-preliminary",
+    "workflowStep": 1
   }
 ]

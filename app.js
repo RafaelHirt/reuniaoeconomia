@@ -10,6 +10,18 @@
     suspended: '#b99d6c'
   };
   const situationOrder = Object.keys(colors);
+  const workflowStages = [
+    { title: 'Relatório preliminar', owner: 'COMACG', description: 'Elaboração do relatório preliminar de monitoramento.' },
+    { title: 'Manifestação da Parceria Privada', owner: 'Parceria Privada', description: 'Manifestação da parceria privada sobre o relatório preliminar.' },
+    { title: 'Manifestação SPAIS', owner: 'SPAIS', description: 'Análise e manifestação da SPAIS sobre o relatório.' },
+    { title: 'Manifestação SUREG', owner: 'SUREG', description: 'Análise e manifestação da SUREG sobre o relatório.' },
+    { title: 'Relatório conclusivo', owner: 'COMACG', description: 'Consolidação das análises da SPAIS e SUREG no relatório conclusivo.' },
+    { title: 'Recurso da Parceria Privada', owner: 'Parceria Privada', description: 'Apresentação de recurso pela parceria privada.' },
+    { title: 'Manifestação da GMAE/CG', owner: 'GMAE/CG', description: 'Análise do recurso e manifestação da GMAE/CG antes da decisão do Gabinete.' },
+    { title: 'Decisão Gabinete', owner: 'Gabinete', description: 'Decisão do Gabinete sobre o processo.' }
+  ];
+  // The phase is supplied per process: identical status texts can have different phases.
+  const workflowPosition = row => Number.isInteger(row.workflowStep) && row.workflowStep >= 1 && row.workflowStep <= workflowStages.length ? row.workflowStep : null;
   const sortNames = { process: 'processo', period: 'período', value: 'valor', situation: 'situação' };
   const collator = new Intl.Collator('pt-BR', { sensitivity: 'base', numeric: true });
   const currency = cents => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(cents / 100);
@@ -121,6 +133,9 @@
     $('barTooltipValue').textContent = row.cents === null ? 'Valor não apurado' : currency(row.cents);
     $('barTooltipRange').textContent = range(row);
     $('barTooltipStatus').textContent = row.description;
+    const position = workflowPosition(row);
+    $('barTooltipPhase').hidden = !position;
+    $('barTooltipPhase').textContent = position ? `Fase ${position} de ${workflowStages.length} · ${workflowStages[position - 1].title}` : '';
     $('barTooltipProcess').textContent = row.id;
     $('barTooltipSei').href = seiUrl(row);
     $('barTooltipSei').dataset.sei = row.id;
@@ -201,7 +216,9 @@
     $('resultText').textContent = `Exibindo ${current.length} de ${records.length} processos`;
     $('scopeText').textContent = (year === 'all' && status === 'all' && !search) ? 'Visão de todos os processos' :
       'Filtros aplicados';
-    $('backToOverview').hidden = year === 'all' && status === 'all' && !search;
+    const hasFilters = year !== 'all' || status !== 'all' || Boolean(search);
+    $('backToOverview').hidden = !hasFilters;
+    $('headerBack').hidden = !hasFilters;
     $('clearFilters').hidden = year === 'all' && status === 'all' && !search && $('sortSelect').value === 'period-asc';
     $('statusFilter').title = $('statusFilter').selectedOptions[0].textContent;
     document.querySelectorAll('[data-year]').forEach(button => {
@@ -209,11 +226,64 @@
       button.classList.toggle('selected', selected);
       button.setAttribute('aria-pressed', String(selected));
     });
-    $('processRows').innerHTML = current.map(row => `<tr data-id="${row.id}"><td><a class="process-number" data-sei="${row.id}" href="${seiUrl(row)}" target="_blank" rel="noopener noreferrer" aria-label="Abrir SEI interno, processo ${row.id}" title="Abrir o SEI interno em outra aba; o número será copiado">${row.id}${icon('external')}</a><span class="process-caption">Abrir SEI interno</span></td><td><span class="period-label">${row.label} ${row.year}</span><span class="period-range">${range(row)}</span></td><td class="value-cell"><span class="amount ${row.cents === null ? 'no-amount' : ''}">${row.cents === null ? 'Valor não apurado' : currency(row.cents)}</span></td><td>${badge(row)}<span class="status-description">${row.description}</span></td><td><button class="row-arrow" data-detail="${row.id}" aria-label="Abrir processo ${row.id}">${icon('chevron')}</button></td></tr>`).join('');
+    $('processRows').innerHTML = current.map(row => `<tr data-id="${row.id}"><td><a class="process-number" data-sei="${row.id}" href="${seiUrl(row)}" target="_blank" rel="noopener noreferrer" aria-label="Abrir SEI interno, processo ${row.id}" title="Abrir o SEI interno em outra aba; o número será copiado">${row.id}${icon('external')}</a><span class="process-caption">Abrir SEI interno</span></td><td><span class="period-label">${row.label} ${row.year}</span><span class="period-range">${range(row)}</span></td><td class="value-cell"><span class="amount ${row.cents === null ? 'no-amount' : ''}">${row.cents === null ? 'Valor não apurado' : currency(row.cents)}</span></td><td>${badge(row)}<span class="status-description">${row.description}</span></td><td><button class="row-arrow" data-detail="${row.id}" aria-label="Ver detalhes e fluxo do processo ${row.id}" title="Ver detalhes e fluxo">${icon('chevron')}</button></td></tr>`).join('');
     $('emptyState').hidden = current.length !== 0;
     renderChart();
     renderSort();
     updateUrl();
+  }
+
+  function placeWorkflowInfo(number) {
+    const button = $('workflowSteps').querySelector(`[data-workflow-step="${number}"]`);
+    if (!button) return;
+    const host = window.matchMedia('(max-width: 820px)').matches ? button.closest('li') : $('workflowInfoHost');
+    host.append($('workflowStepInfo'));
+  }
+
+  function showWorkflowStep(row, number) {
+    const stage = workflowStages[number - 1];
+    if (!stage) return;
+    const position = workflowPosition(row);
+    let relation = 'Etapa de referência do fluxo';
+    if (position) relation = number === position ? 'Etapa atual deste processo' : number < position ? 'Etapa anterior no fluxo' : 'Etapa seguinte no fluxo';
+    $('workflowInfoKicker').textContent = `Etapa ${number} · ${relation}`;
+    $('workflowInfoTitle').textContent = stage.title;
+    $('workflowInfoDescription').textContent = `${stage.description} Responsável: ${stage.owner}.`;
+    $('workflowStepInfo').hidden = false;
+    document.querySelectorAll('[data-workflow-step]').forEach(button => {
+      const selected = Number(button.dataset.workflowStep) === number;
+      button.setAttribute('aria-expanded', String(selected));
+      button.closest('li').classList.toggle('is-selected', selected);
+    });
+    placeWorkflowInfo(number);
+  }
+
+  function renderWorkflow(row) {
+    $('workflowInfoHost').append($('workflowStepInfo'));
+    const position = workflowPosition(row);
+    const suspended = row.group === 'suspended';
+    $('pipelinePosition').textContent = position ? `Etapa ${position} de ${workflowStages.length}` : 'Etapa não indicada';
+    $('pipelinePosition').classList.toggle('is-unknown', !position);
+    $('pipelinePosition').classList.toggle('is-suspended', suspended);
+    $('pipelinePosition').closest('.process-pipeline').classList.toggle('is-suspended', suspended);
+    $('pipelineContext').classList.toggle('is-unknown', !position);
+    $('pipelineContext').classList.toggle('is-suspended', suspended);
+    $('pipelineContext').classList.toggle('is-final', position === workflowStages.length);
+    $('pipelineCurrentLabel').textContent = position ? (suspended ? 'FASE INFORMADA · GLOSA SUSPENSA' : 'ETAPA ATUAL') : 'SITUAÇÃO DO PROCESSO';
+    $('pipelineCurrentTitle').textContent = position ? workflowStages[position - 1].title : row.status;
+    $('pipelineCurrentNote').textContent = !position ?
+      (suspended ? 'A glosa está suspensa. O andamento informado não identifica uma etapa deste fluxo.' : 'O andamento informado ainda não tem uma etapa definida neste fluxo.') :
+      suspended ? 'Glosa suspensa' : row.situation === 'waiting' ? 'Aguardando despacho SPAIS' : row.situation === 'dispatch-appeal' ? 'Análise de recurso hierárquico' : 'Em elaboração';
+    $('pipelineNextGroup').hidden = !position || position === workflowStages.length;
+    $('pipelineNextTitle').textContent = position && position < workflowStages.length ? workflowStages[position].title : 'Fim da sequência de referência';
+    $('workflowSteps').innerHTML = workflowStages.map((stage, index) => {
+      const number = index + 1;
+      const state = !position ? 'is-unknown' : number < position ? 'is-past' : number === position ? 'is-current' : 'is-future';
+      const label = !position ? 'Etapa do fluxo' : number < position ? 'Anterior' : number === position ? 'Etapa atual' : number === position + 1 ? 'Próxima etapa' : 'Seguinte';
+      return `<li class="workflow-step ${state}"><button type="button" class="workflow-step-button" data-workflow-step="${number}" aria-controls="workflowStepInfo" aria-expanded="false"${number === position ? ' aria-current="step"' : ''} aria-label="Etapa ${number}: ${stage.title}. ${label}. Consultar explicação"><span class="workflow-number">${number}</span><span class="workflow-step-label"><span>${stage.title}</span><small>${label}</small></span></button></li>`;
+    }).join('');
+    $('workflowStepInfo').hidden = true;
+    if (position) showWorkflowStep(row, position);
   }
 
   function detail(id) {
@@ -233,7 +303,10 @@
     $('detailDescription').textContent = row.description;
     $('openSei').href = seiUrl(row);
     $('openSei').dataset.sei = row.id;
+    renderWorkflow(row);
     $('detailDialog').showModal();
+    $('detailDialog').scrollTop = 0;
+    $('detailDialog').querySelector('.detail-dialog-body').scrollTop = 0;
   }
 
   function returnToOverview() {
@@ -272,6 +345,12 @@
   }
 
   document.addEventListener('click', event => {
+    const workflowStep = event.target.closest('[data-workflow-step]');
+    if (workflowStep && active) {
+      showWorkflowStep(active, Number(workflowStep.dataset.workflowStep));
+      $('workflowStepInfo').scrollIntoView({ block: 'nearest', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+      return;
+    }
     const seiLink = event.target.closest('[data-sei]');
     if (seiLink) {
       navigator.clipboard?.writeText(seiLink.dataset.sei).then(() => toast('Número copiado para pesquisar no SEI'))
@@ -344,11 +423,17 @@
     if (!$('barTooltip').contains(event.target)) positionBarTooltip(true);
   }, { capture: true, passive: true });
   window.addEventListener('resize', () => positionBarTooltip(true), { passive: true });
+  window.addEventListener('resize', () => {
+    if (!$('detailDialog').open) return;
+    const selected = $('workflowSteps').querySelector('[aria-expanded="true"]');
+    if (selected) placeWorkflowInfo(Number(selected.dataset.workflowStep));
+  }, { passive: true });
   $('statusFilter').addEventListener('change', render);
   $('sortSelect').addEventListener('change', render);
   $('clearFilters').addEventListener('click', clear);
   $('emptyClear').addEventListener('click', clear);
   $('backToOverview').addEventListener('click', returnToOverview);
+  $('headerBack').addEventListener('click', returnToOverview);
   $('backFromDetail').addEventListener('click', () => $('detailDialog').close());
   $('closeDialog').addEventListener('click', () => $('detailDialog').close());
   $('detailDialog').addEventListener('click', event => {
