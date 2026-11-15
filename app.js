@@ -21,6 +21,7 @@
   const range = row => `${date(row.start)} a ${date(row.end)}`;
   const params = new URLSearchParams(location.search);
   let records = [], current = [], situations = [], active = null, toastTimer;
+  let tooltipTarget = null, tooltipHideTimer;
   let year = ['2024', '2025', '2026'].includes(params.get('ano')) ? params.get('ano') : 'all';
 
   $('searchInput').value = params.get('busca') || '';
@@ -83,14 +84,69 @@
     $('sortStatus').textContent = `Ordenação: ${$('sortSelect').selectedOptions[0].textContent}`;
   }
 
+  function hideBarTooltip() {
+    clearTimeout(tooltipHideTimer);
+    tooltipTarget?.removeAttribute('aria-describedby');
+    tooltipTarget = null;
+    $('barTooltip').hidden = true;
+    document.querySelectorAll('.legend-button.is-chart-hover').forEach(button => button.classList.remove('is-chart-hover'));
+  }
+
+  function positionBarTooltip(hideIfOutside = false) {
+    if (!tooltipTarget || $('barTooltip').hidden) return;
+    const anchor = tooltipTarget.getBoundingClientRect();
+    if (hideIfOutside && (anchor.bottom <= 0 || anchor.top >= window.innerHeight)) {
+      hideBarTooltip();
+      return;
+    }
+    const tooltip = $('barTooltip');
+    const box = tooltip.getBoundingClientRect();
+    const margin = 12;
+    const left = Math.max(margin, Math.min(document.documentElement.clientWidth - box.width - margin, anchor.left + anchor.width / 2 - box.width / 2));
+    const above = anchor.top - box.height - margin;
+    const below = anchor.bottom + margin;
+    const top = above >= margin ? above : Math.max(margin, Math.min(window.innerHeight - box.height - margin, below));
+    tooltip.style.left = `${left}px`;
+    tooltip.style.top = `${top}px`;
+  }
+
+  function showBarTooltip(column) {
+    const row = records.find(item => item.id === column.dataset.detail);
+    if (!row) return;
+    hideBarTooltip();
+    tooltipTarget = column;
+    $('barTooltipPeriod').textContent = `${row.label} ${row.year}`;
+    $('barTooltipValue').textContent = row.cents === null ? 'Valor não apurado' : currency(row.cents);
+    $('barTooltipRange').textContent = range(row);
+    $('barTooltipStatus').textContent = row.description;
+    $('barTooltipProcess').textContent = row.id;
+    const tooltip = $('barTooltip');
+    tooltip.style.setProperty('--status-color', colors[row.situation] || '#6b8472');
+    tooltip.hidden = false;
+    positionBarTooltip();
+    column.setAttribute('aria-describedby', 'barTooltip');
+    document.querySelectorAll('[data-situation]').forEach(button => {
+      button.classList.toggle('is-chart-hover', button.dataset.situation === row.situation);
+    });
+  }
+
+  function scheduleBarTooltipHide() {
+    clearTimeout(tooltipHideTimer);
+    tooltipHideTimer = setTimeout(() => {
+      if (tooltipTarget && (tooltipTarget.matches(':hover') || tooltipTarget === document.activeElement || $('barTooltip').matches(':hover'))) return;
+      hideBarTooltip();
+    }, 160);
+  }
+
   function renderChart() {
+    hideBarTooltip();
     $('barChart').innerHTML = [...current].sort((a, b) => a.start.localeCompare(b.start)).map(row => {
       const value = row.cents === null ? 'N/A' : new Intl.NumberFormat('pt-BR', {
         minimumFractionDigits: 2, maximumFractionDigits: 2
       }).format(row.cents / 100000000);
       const height = row.cents === null ? '12px' : `${row.cents / 1200000000 * 100}%`;
       const label = row.cents === null ? 'valor não apurado' : currency(row.cents);
-      return `<button class="bar-column ${row.cents === null ? 'missing' : ''}" data-detail="${row.id}" title="${row.label} ${row.year}: ${label}" aria-label="${row.label} ${row.year}, ${label}, abrir processo ${row.id}"><span class="bar-space"><span class="bar-value">${value}</span><span class="bar" style="height:${height}"></span></span><span class="bar-label">${row.label}</span><span class="bar-year">${row.year}</span></button>`;
+      return `<button class="bar-column ${row.cents === null ? 'missing' : ''}" data-detail="${row.id}" aria-label="${row.label} ${row.year}, ${label}, abrir processo ${row.id}"><span class="bar-space"><span class="bar-value">${value}</span><span class="bar" style="height:${height}"></span></span><span class="bar-label">${row.label}</span><span class="bar-year">${row.year}</span></button>`;
     }).join('');
     if (!current.length) $('barChart').innerHTML = '<span class="chart-empty">Nenhum processo neste recorte</span>';
 
@@ -148,6 +204,7 @@
   }
 
   function detail(id) {
+    hideBarTooltip();
     const row = records.find(item => item.id === id);
     if (!row) return;
     active = row;
@@ -227,6 +284,29 @@
     if (nav) document.querySelectorAll('[data-nav]').forEach(item => item.classList.toggle('active', item === nav));
   });
   $('searchInput').addEventListener('input', render);
+  $('barChart').addEventListener('pointerover', event => {
+    if (event.pointerType === 'touch') return;
+    const column = event.target.closest('.bar-column');
+    if (column && !column.contains(event.relatedTarget)) showBarTooltip(column);
+  });
+  $('barChart').addEventListener('pointerout', event => {
+    const column = event.target.closest('.bar-column');
+    if (column && !column.contains(event.relatedTarget)) scheduleBarTooltipHide();
+  });
+  $('barChart').addEventListener('focusin', event => {
+    const column = event.target.closest('.bar-column');
+    if (column) showBarTooltip(column);
+  });
+  $('barChart').addEventListener('focusout', scheduleBarTooltipHide);
+  $('barTooltip').addEventListener('pointerenter', () => clearTimeout(tooltipHideTimer));
+  $('barTooltip').addEventListener('pointerleave', scheduleBarTooltipHide);
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape') hideBarTooltip();
+  });
+  window.addEventListener('scroll', event => {
+    if (!$('barTooltip').contains(event.target)) positionBarTooltip(true);
+  }, { capture: true, passive: true });
+  window.addEventListener('resize', () => positionBarTooltip(true), { passive: true });
   $('statusFilter').addEventListener('change', render);
   $('sortSelect').addEventListener('change', render);
   $('clearFilters').addEventListener('click', clear);
