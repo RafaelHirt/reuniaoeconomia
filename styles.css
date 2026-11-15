@@ -67,6 +67,22 @@ th[aria-sort]{color:#416a49}
 .chart-tooltip-status i{width:7px;height:7px;margin-top:6px;border-radius:50%;background:var(--status-color)}
 .chart-tooltip-process{margin-top:13px;padding-top:10px;border-top:1px solid #edf1e7;font-size:9px;color:#8b9980}
 .chart-tooltip-process span{margin-left:4px;color:#657e58;font-variant-numeric:tabular-nums}
+.chart-heading-actions{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:10px}
+.chart-heading-actions .button{min-height:30px;padding:0 10px;font-size:9px}
+.back-arrow{transform:rotate(180deg)}
+.back-link{display:inline-flex;align-items:center;gap:7px;padding:5px 0;border:0;background:transparent;color:#4b6b41;font-size:11px}
+.back-link svg{width:16px;height:16px}
+.back-link:hover{color:#25472c}
+.chart-sei-action{margin-top:13px;width:100%;min-height:34px}
+.legend-item{min-width:0}
+.legend-sei,.note-sei{display:inline-flex;align-items:center;gap:5px;font-variant-numeric:tabular-nums;text-decoration:underline;text-underline-offset:3px;white-space:nowrap}
+.legend-sei{margin:0 0 8px 25px;font-size:9px;color:#6f865f}
+.legend-sei:hover{color:#2d5d3a}
+.legend-sei svg,.note-sei svg{width:10px;height:10px}
+.suspended-note{flex-wrap:wrap;row-gap:10px}
+.note-quantity{display:flex;flex-direction:column;align-items:flex-end;gap:4px;white-space:normal}
+.note-sei{font-size:8px;color:#92784d}
+.note-sei:hover{color:#6c542c}
 @media screen and (max-width:1180px){
  .analytics{grid-template-columns:minmax(0,1fr)}
  .financial-panel .chart-wrap{margin-block:0}

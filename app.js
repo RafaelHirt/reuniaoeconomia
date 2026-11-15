@@ -87,6 +87,8 @@
   function hideBarTooltip() {
     clearTimeout(tooltipHideTimer);
     tooltipTarget?.removeAttribute('aria-describedby');
+    tooltipTarget?.removeAttribute('aria-controls');
+    tooltipTarget?.setAttribute('aria-expanded', 'false');
     tooltipTarget = null;
     $('barTooltip').hidden = true;
     document.querySelectorAll('.legend-button.is-chart-hover').forEach(button => button.classList.remove('is-chart-hover'));
@@ -120,11 +122,16 @@
     $('barTooltipRange').textContent = range(row);
     $('barTooltipStatus').textContent = row.description;
     $('barTooltipProcess').textContent = row.id;
+    $('barTooltipSei').href = seiUrl(row);
+    $('barTooltipSei').dataset.sei = row.id;
+    $('barTooltipSei').setAttribute('aria-label', `Abrir SEI interno para consultar ${row.id}`);
     const tooltip = $('barTooltip');
     tooltip.style.setProperty('--status-color', colors[row.situation] || '#6b8472');
     tooltip.hidden = false;
     positionBarTooltip();
-    column.setAttribute('aria-describedby', 'barTooltip');
+    column.setAttribute('aria-describedby', 'barTooltipStatus');
+    column.setAttribute('aria-controls', 'barTooltip');
+    column.setAttribute('aria-expanded', 'true');
     document.querySelectorAll('[data-situation]').forEach(button => {
       button.classList.toggle('is-chart-hover', button.dataset.situation === row.situation);
     });
@@ -133,7 +140,7 @@
   function scheduleBarTooltipHide() {
     clearTimeout(tooltipHideTimer);
     tooltipHideTimer = setTimeout(() => {
-      if (tooltipTarget && (tooltipTarget.matches(':hover') || tooltipTarget === document.activeElement || $('barTooltip').matches(':hover'))) return;
+      if (tooltipTarget && (tooltipTarget.matches(':hover') || tooltipTarget === document.activeElement || $('barTooltip').matches(':hover') || $('barTooltip').contains(document.activeElement))) return;
       hideBarTooltip();
     }, 160);
   }
@@ -146,13 +153,14 @@
       }).format(row.cents / 100000000);
       const height = row.cents === null ? '12px' : `${row.cents / 1200000000 * 100}%`;
       const label = row.cents === null ? 'valor não apurado' : currency(row.cents);
-      return `<button class="bar-column ${row.cents === null ? 'missing' : ''}" data-detail="${row.id}" aria-label="${row.label} ${row.year}, ${label}, abrir processo ${row.id}"><span class="bar-space"><span class="bar-value">${value}</span><span class="bar" style="height:${height}"></span></span><span class="bar-label">${row.label}</span><span class="bar-year">${row.year}</span></button>`;
+      return `<button class="bar-column ${row.cents === null ? 'missing' : ''}" data-detail="${row.id}" aria-haspopup="dialog" aria-expanded="false" aria-label="${row.label} ${row.year}, ${label}, abrir processo ${row.id}"><span class="bar-space"><span class="bar-value">${value}</span><span class="bar" style="height:${height}"></span></span><span class="bar-label">${row.label}</span><span class="bar-year">${row.year}</span></button>`;
     }).join('');
     if (!current.length) $('barChart').innerHTML = '<span class="chart-empty">Nenhum processo neste recorte</span>';
 
-    const counts = situations.map(situation => ({
-      ...situation, count: current.filter(row => row.situation === situation.id).length
-    })).filter(situation => situation.count > 0);
+    const counts = situations.map(situation => {
+      const processes = current.filter(row => row.situation === situation.id);
+      return { ...situation, processes, count: processes.length };
+    }).filter(situation => situation.count > 0);
     let angle = 0;
     const slices = counts.map(situation => {
       const start = angle;
@@ -161,16 +169,20 @@
     });
     $('donut').style.background = current.length ? `conic-gradient(${slices.join(',')})` : '#eef1e9';
     $('donutCount').textContent = current.length;
+    $('donutLabel').textContent = current.length === 1 ? 'processo' : 'processos';
     $('donut').setAttribute('aria-label', current.length ? counts.map(situation =>
       `${situation.label}: ${situation.count} ${situation.count === 1 ? 'processo' : 'processos'}`
     ).join('; ') : 'Nenhum processo neste recorte');
     $('situationLegend').innerHTML = counts.length ? counts.map(situation => {
       const percentage = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 1 }).format(situation.count / current.length * 100);
-      return `<button class="legend-button" data-situation="${situation.id}" style="--dot:${situation.color}" aria-pressed="${$('statusFilter').value === situation.id}" aria-label="Filtrar: ${situation.label}, ${situation.count} ${situation.count === 1 ? 'processo' : 'processos'}, ${percentage}%"><i></i><span class="legend-label">${situation.label}</span><span class="legend-stat"><strong>${situation.count}</strong><small>${percentage}%</small></span></button>`;
+      const process = situation.count === 1 ? situation.processes[0] : null;
+      const processLink = process ? `<a class="legend-sei" data-sei="${process.id}" href="${seiUrl(process)}" target="_blank" rel="noopener noreferrer" aria-label="Abrir SEI interno, processo ${process.id}">SEI ${process.id}${icon('external')}</a>` : '';
+      return `<div class="legend-item"><button class="legend-button" data-situation="${situation.id}" style="--dot:${situation.color}" aria-pressed="${$('statusFilter').value === situation.id}" aria-label="Filtrar: ${situation.label}, ${situation.count} ${situation.count === 1 ? 'processo' : 'processos'}, ${percentage}%"><i></i><span class="legend-label">${situation.label}</span><span class="legend-stat"><strong>${situation.count}</strong><small>${percentage}%</small></span></button>${processLink}</div>`;
     }).join('') : '<p class="situation-empty">Nenhum processo neste recorte.</p>';
     const suspended = current.filter(row => row.group === 'suspended');
     $('suspendedNote').hidden = suspended.length === 0;
-    $('suspendedNote').innerHTML = `${icon('pause')}<span>Glosa suspensa<strong>${currency(suspended.reduce((sum, row) => sum + (row.cents || 0), 0))}</strong></span><span class="note-quantity">${suspended.length} ${suspended.length === 1 ? 'processo' : 'processos'}</span>`;
+    const suspendedLinks = suspended.map(row => `<a class="note-sei" data-sei="${row.id}" href="${seiUrl(row)}" target="_blank" rel="noopener noreferrer" aria-label="Abrir SEI interno, processo ${row.id}">SEI ${row.id}${icon('external')}</a>`).join('');
+    $('suspendedNote').innerHTML = `${icon('pause')}<span>Glosa suspensa<strong>${currency(suspended.reduce((sum, row) => sum + (row.cents || 0), 0))}</strong></span><span class="note-quantity"><span>${suspended.length} ${suspended.length === 1 ? 'processo' : 'processos'}</span>${suspendedLinks}</span>`;
   }
 
   function render() {
@@ -189,6 +201,7 @@
     $('resultText').textContent = `Exibindo ${current.length} de ${records.length} processos`;
     $('scopeText').textContent = (year === 'all' && status === 'all' && !search) ? 'Visão de todos os processos' :
       'Filtros aplicados';
+    $('backToOverview').hidden = year === 'all' && status === 'all' && !search;
     $('clearFilters').hidden = year === 'all' && status === 'all' && !search && $('sortSelect').value === 'period-asc';
     $('statusFilter').title = $('statusFilter').selectedOptions[0].textContent;
     document.querySelectorAll('[data-year]').forEach(button => {
@@ -223,12 +236,16 @@
     $('detailDialog').showModal();
   }
 
-  function clear() {
+  function returnToOverview() {
     year = 'all';
     $('statusFilter').value = 'all';
     $('searchInput').value = '';
-    $('sortSelect').value = 'period-asc';
     render();
+  }
+
+  function clear() {
+    $('sortSelect').value = 'period-asc';
+    returnToOverview();
   }
 
   function toast(message) {
@@ -300,8 +317,28 @@
   $('barChart').addEventListener('focusout', scheduleBarTooltipHide);
   $('barTooltip').addEventListener('pointerenter', () => clearTimeout(tooltipHideTimer));
   $('barTooltip').addEventListener('pointerleave', scheduleBarTooltipHide);
+  $('barTooltip').addEventListener('focusin', () => clearTimeout(tooltipHideTimer));
+  $('barTooltip').addEventListener('focusout', scheduleBarTooltipHide);
   document.addEventListener('keydown', event => {
-    if (event.key === 'Escape') hideBarTooltip();
+    if (!tooltipTarget || $('barTooltip').hidden) return;
+    const column = tooltipTarget;
+    const insidePopover = $('barTooltip').contains(event.target);
+    if (event.key === 'Escape') {
+      if (insidePopover) column.focus({ preventScroll: true });
+      hideBarTooltip();
+    } else if (event.key === 'Tab' && event.target === column && !event.shiftKey) {
+      event.preventDefault();
+      $('barTooltipSei').focus();
+    } else if (event.key === 'Tab' && insidePopover) {
+      event.preventDefault();
+      if (event.shiftKey) column.focus({ preventScroll: true });
+      else {
+        const columns = [...$('barChart').querySelectorAll('.bar-column')];
+        const next = columns[columns.indexOf(column) + 1] || $('situationLegend').querySelector('button');
+        hideBarTooltip();
+        next?.focus();
+      }
+    }
   });
   window.addEventListener('scroll', event => {
     if (!$('barTooltip').contains(event.target)) positionBarTooltip(true);
@@ -311,6 +348,8 @@
   $('sortSelect').addEventListener('change', render);
   $('clearFilters').addEventListener('click', clear);
   $('emptyClear').addEventListener('click', clear);
+  $('backToOverview').addEventListener('click', returnToOverview);
+  $('backFromDetail').addEventListener('click', () => $('detailDialog').close());
   $('closeDialog').addEventListener('click', () => $('detailDialog').close());
   $('detailDialog').addEventListener('click', event => {
     const rect = $('detailDialog').getBoundingClientRect();
