@@ -52,3 +52,12 @@ Fases fornecidas pelo usuário:
 As cores distinguem etapas anteriores na sequência, fase atual e etapas seguintes. Não são um histórico de datas ou uma comprovação independente da conclusão de cada etapa. A glosa suspensa fica na fase 8, conforme a informação do usuário, com a suspensão destacada em âmbar; não aparece como processo concluído.
 
 A janela amplia o fluxo no computador e apresenta as etapas na vertical em telas menores. No celular, a explicação aparece junto à etapa selecionada. Voltar e Abrir SEI permanecem disponíveis durante a leitura. A fase atual também aparece na caixa do gráfico de valores. Um botão de retorno com destaque aparece ao lado de Imprimir quando há filtros ativos e restaura a visão geral preservando a ordenação.
+
+
+## Pipeline na visão geral
+
+A seção **Processos por fase atual** mostra as oito fases e suas quantidades, inclusive fases sem processos. As contagens usam a fase atual de cada registro, sem acumular processos nas etapas anteriores. A distribuição inicial é **2 / 0 / 1 / 0 / 2 / 0 / 2 / 1**.
+
+Clicar em uma fase revela, no próprio painel, os períodos, números SEI, valores e andamentos dos processos correspondentes, com acesso aos detalhes. Os indicadores, gráficos, tabela e CSV acompanham a seleção. As quantidades das outras fases continuam visíveis para facilitar a troca de fase. Ano, situação e busca delimitam a base usada nas contagens. A seleção fica na URL como `fase=1` a `fase=8`.
+
+**Voltar às fases** remove apenas a seleção de fase e preserva os demais filtros e a ordenação. **Voltar à visão geral** restaura todos os processos. Os detalhes passam a abrir com uma faixa **Você está aqui**, número grande da fase e próxima etapa; a fase também aparece no cabeçalho fixo e em destaque na linha do tempo. A glosa suspensa mantém sua sinalização em âmbar.

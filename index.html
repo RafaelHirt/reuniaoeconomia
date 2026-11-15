@@ -52,6 +52,15 @@
    <article class="metric metric-featured"><div class="metric-label">Total dos valores apurados<svg><use href="#i-coins"/></svg></div><div class="metric-value" id="metricTotal">R$ 29.037.553,29</div><div class="metric-note" id="metricTotalNote">Inclui o valor da glosa suspensa</div></article>
    <article class="metric"><div class="metric-label">Processos acompanhados<svg><use href="#i-file"/></svg></div><div class="metric-value" id="metricCount">08</div></article>
   </section>
+  <section class="panel overview-pipeline" id="overviewPipeline" aria-labelledby="overviewPipelineTitle">
+   <div class="overview-pipeline-heading"><div><span class="eyebrow">MONITORAMENTO E DECISÃO</span><h2 id="overviewPipelineTitle">Processos por fase atual</h2><p>Clique em uma fase para consultar os processos.</p></div><span class="pipeline-total" id="overviewPipelineTotal"></span></div>
+   <ol class="phase-overview-steps" id="phaseOverviewSteps" aria-label="Quantidade de processos em cada uma das oito fases"></ol>
+   <section class="phase-results" id="phaseResults" aria-labelledby="phaseResultsTitle" hidden>
+    <div class="phase-results-heading"><div><h3 id="phaseResultsTitle" tabindex="-1"></h3><p id="phaseResultsCount" aria-live="polite"></p></div><button class="button secondary" data-clear-phase><svg class="back-arrow"><use href="#i-arrow"/></svg>Voltar às fases</button></div>
+    <ul class="phase-process-list" id="phaseProcessRows"></ul>
+    <p class="phase-empty" id="phaseEmpty" hidden>Nenhum processo nesta fase com os filtros selecionados.</p>
+   </section>
+  </section>
   <section class="analytics" aria-label="Visão dos valores e situações">
    <article class="panel financial-panel" id="periods"><div class="panel-heading"><div><h2>Valores por período</h2><p>Distribuição dos valores apurados</p></div><div class="chart-heading-actions"><button class="button secondary" id="backToOverview" aria-controls="barChart situationLegend processRows" hidden><svg class="back-arrow"><use href="#i-arrow"/></svg>Voltar à visão geral</button><span class="unit-label">R$ milhões</span></div></div><div class="chart-wrap"><div class="chart-axis" aria-hidden="true"><span>12</span><span>9</span><span>6</span><span>3</span><span>0</span></div><div class="bar-chart" id="barChart" aria-label="Valores apurados por período"></div></div><div class="chart-foot"><span><i class="legend-square"></i>Valor apurado</span><span><i class="legend-empty"></i>Valor não apurado</span></div></article>
    <article class="panel situation-panel"><div class="panel-heading"><div><h2>Situação dos processos</h2><p>Andamentos completos para acompanhamento da gestão</p></div></div><div class="situation-content"><div class="donut" id="donut" role="img" aria-label="Distribuição por situação"><div><strong id="donutCount">8</strong><span id="donutLabel">processos</span></div></div><div class="situation-legend" id="situationLegend"></div></div><div class="suspended-note" id="suspendedNote"><svg><use href="#i-pause"/></svg><span>Glosa suspensa<strong>R$ 11.277.071,58</strong></span><span class="note-quantity">1 processo</span></div></article>
@@ -64,16 +73,20 @@
  </main>
 </div>
 <dialog id="detailDialog" aria-labelledby="detailTitle">
- <div class="dialog-top"><button class="back-link" id="backFromDetail"><svg class="back-arrow"><use href="#i-arrow"/></svg>Voltar ao painel</button><button class="icon-button" id="closeDialog" aria-label="Fechar detalhes"><svg><use href="#i-close"/></svg></button></div>
+ <div class="dialog-top"><button class="back-link" id="backFromDetail"><svg class="back-arrow"><use href="#i-arrow"/></svg>Voltar ao painel</button><span class="detail-phase-chip" id="dialogPhaseBadge"></span><button class="icon-button" id="closeDialog" aria-label="Fechar detalhes"><svg><use href="#i-close"/></svg></button></div>
  <div class="detail-dialog-body">
   <div class="detail-heading"><span class="eyebrow">PROCESSO · HUGO / COMACG</span><h2 id="detailTitle"></h2><div class="detail-year" id="detailPeriodLabel"></div></div>
+  <section class="current-phase-hero" id="pipelineContext" aria-labelledby="pipelineCurrentTitle">
+   <span class="current-phase-number" id="detailPhaseNumber"></span>
+   <div class="current-phase-main"><span class="pipeline-context-label" id="pipelineCurrentLabel">VOCÊ ESTÁ AQUI</span><h3 id="pipelineCurrentTitle"></h3><p id="pipelineCurrentNote"></p></div>
+   <div class="current-phase-next" id="pipelineNextGroup"><span class="pipeline-context-label">PRÓXIMA ETAPA NO FLUXO</span><strong id="pipelineNextTitle"></strong></div>
+  </section>
   <div class="detail-overview">
    <div class="detail-value"><span>VALOR APURADO</span><strong id="detailValue"></strong><p id="detailValueNote"></p></div>
    <dl class="detail-status-card"><div><dt>Situação informada</dt><dd id="detailStatus"></dd></div><div><dt>Andamento informado</dt><dd id="detailDescription"></dd></div></dl>
   </div>
   <section class="process-pipeline" aria-labelledby="pipelineTitle">
    <div class="pipeline-heading"><div><span class="eyebrow">LINHA DO TEMPO</span><h3 id="pipelineTitle">Fluxo de monitoramento e decisão</h3></div><span class="pipeline-position" id="pipelinePosition"></span></div>
-   <div class="pipeline-context" id="pipelineContext"><div><span class="pipeline-context-label" id="pipelineCurrentLabel">ETAPA ATUAL</span><strong id="pipelineCurrentTitle"></strong><p id="pipelineCurrentNote"></p></div><div id="pipelineNextGroup"><span class="pipeline-context-label">PRÓXIMA ETAPA NO FLUXO</span><strong id="pipelineNextTitle"></strong></div></div>
    <p class="workflow-help">Selecione uma etapa para entender o que acontece nela.</p>
    <ol class="workflow-steps" id="workflowSteps" aria-label="Oito etapas do fluxo de monitoramento e decisão"></ol>
    <div class="workflow-legend"><span><i class="workflow-past-key"></i>Anteriores no fluxo</span><span><i class="workflow-current-key"></i>Etapa atual</span><span><i class="workflow-future-key"></i>Etapas seguintes</span></div>

@@ -35,6 +35,8 @@
   let records = [], current = [], situations = [], active = null, toastTimer;
   let tooltipTarget = null, tooltipHideTimer;
   let year = ['2024', '2025', '2026'].includes(params.get('ano')) ? params.get('ano') : 'all';
+  const requestedPhase = Number(params.get('fase'));
+  let selectedPhase = Number.isInteger(requestedPhase) && requestedPhase >= 1 && requestedPhase <= workflowStages.length ? requestedPhase : null;
 
   $('searchInput').value = params.get('busca') || '';
   if ([...$('sortSelect').options].some(option => option.value === params.get('ordem'))) {
@@ -61,6 +63,7 @@
     const query = new URLSearchParams();
     if (year !== 'all') query.set('ano', year);
     if ($('statusFilter').value !== 'all') query.set('situacao', $('statusFilter').value);
+    if (selectedPhase) query.set('fase', selectedPhase);
     if ($('searchInput').value.trim()) query.set('busca', $('searchInput').value.trim());
     if ($('sortSelect').value !== 'period-asc') query.set('ordem', $('sortSelect').value);
     history.replaceState(null, '', location.pathname + (query.size ? '?' + query : '') + location.hash);
@@ -200,13 +203,46 @@
     $('suspendedNote').innerHTML = `${icon('pause')}<span>Glosa suspensa<strong>${currency(suspended.reduce((sum, row) => sum + (row.cents || 0), 0))}</strong></span><span class="note-quantity"><span>${suspended.length} ${suspended.length === 1 ? 'processo' : 'processos'}</span>${suspendedLinks}</span>`;
   }
 
+  function renderPipelineOverview(baseRows) {
+    const mappedCount = baseRows.filter(row => workflowPosition(row)).length;
+    const unknownCount = baseRows.length - mappedCount;
+    $('overviewPipelineTotal').textContent = `${mappedCount} ${mappedCount === 1 ? 'processo no fluxo' : 'processos no fluxo'}${unknownCount ? ` · ${unknownCount} sem fase definida` : ''}`;
+    $('phaseOverviewSteps').innerHTML = workflowStages.map((stage, index) => {
+      const number = index + 1;
+      const processes = baseRows.filter(row => workflowPosition(row) === number);
+      const suspended = processes.filter(row => row.group === 'suspended').length;
+      const selected = number === selectedPhase;
+      const countLabel = processes.length === 1 ? 'processo' : 'processos';
+      return `<li class="phase-overview-step"><button class="phase-card ${processes.length ? 'has-processes' : 'is-empty'} ${selected ? 'is-active' : ''} ${suspended ? 'has-suspended' : ''}" data-phase="${number}" aria-pressed="${selected}" aria-expanded="${selected}" aria-controls="phaseResults" aria-label="Fase ${number}: ${stage.title}, ${processes.length} ${countLabel}. Ver processos"><span class="phase-card-heading"><span class="phase-card-number">${number}</span><span>FASE ${number}</span></span><span class="phase-card-title">${stage.title}</span><span class="phase-card-quantity"><strong>${processes.length}</strong><span>${countLabel}</span></span>${suspended ? `<span class="phase-card-note">${suspended} ${suspended === 1 ? 'glosa suspensa' : 'glosas suspensas'}</span>` : ''}</button></li>`;
+    }).join('');
+    $('phaseResults').hidden = !selectedPhase;
+    if (!selectedPhase) {
+      $('phaseProcessRows').innerHTML = '';
+      return;
+    }
+    $('phaseResultsTitle').textContent = `Fase ${selectedPhase} · ${workflowStages[selectedPhase - 1].title}`;
+    $('phaseResultsCount').textContent = `${current.length} ${current.length === 1 ? 'processo nesta fase' : 'processos nesta fase'}`;
+    $('phaseEmpty').hidden = current.length !== 0;
+    $('phaseProcessRows').innerHTML = current.map(row => `<li class="phase-process" data-process-id="${row.id}"><div class="phase-process-reference"><strong>${row.label} ${row.year}</strong><span>${range(row)}</span><a class="phase-process-sei" data-sei="${row.id}" href="${seiUrl(row)}" target="_blank" rel="noopener noreferrer" aria-label="Abrir SEI interno, processo ${row.id}">SEI ${row.id}${icon('external')}</a></div><div class="phase-process-status">${badge(row)}<p>${row.description}</p></div><div class="phase-process-action"><strong>${row.cents === null ? 'Valor não apurado' : currency(row.cents)}</strong><button class="button secondary" data-detail="${row.id}" aria-label="Ver detalhes e fluxo do processo ${row.id}">Ver detalhes${icon('chevron')}</button></div></li>`).join('');
+  }
+
+  function clearPhaseFilter() {
+    const previous = selectedPhase;
+    selectedPhase = null;
+    render();
+    const button = $('phaseOverviewSteps').querySelector(`[data-phase="${previous}"]`);
+    button?.focus({ preventScroll: true });
+    button?.scrollIntoView({ block: 'nearest', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+  }
+
   function render() {
     const search = normalize($('searchInput').value.trim());
     const status = $('statusFilter').value;
-    current = records.filter(row => (year === 'all' || row.year === Number(year)) &&
+    const baseRows = records.filter(row => (year === 'all' || row.year === Number(year)) &&
       (status === 'all' || row.situation === status || row.group === status) &&
       (!search || normalize(`${row.id} ${row.description} ${row.label} ${row.year} ${range(row)}`).includes(search))
-    ).sort(sortRows);
+    );
+    current = baseRows.filter(row => !selectedPhase || workflowPosition(row) === selectedPhase).sort(sortRows);
     const total = current.reduce((sum, row) => sum + (row.cents || 0), 0);
     $('metricTotal').textContent = currency(total);
     $('metricTotalNote').textContent = current.some(row => row.group === 'suspended') ?
@@ -214,12 +250,12 @@
     $('metricCount').textContent = String(current.length).padStart(2, '0');
     $('resultBadge').textContent = current.length;
     $('resultText').textContent = `Exibindo ${current.length} de ${records.length} processos`;
-    $('scopeText').textContent = (year === 'all' && status === 'all' && !search) ? 'Visão de todos os processos' :
+    $('scopeText').textContent = (year === 'all' && status === 'all' && !search && !selectedPhase) ? 'Visão de todos os processos' :
       'Filtros aplicados';
-    const hasFilters = year !== 'all' || status !== 'all' || Boolean(search);
+    const hasFilters = year !== 'all' || status !== 'all' || Boolean(search) || Boolean(selectedPhase);
     $('backToOverview').hidden = !hasFilters;
     $('headerBack').hidden = !hasFilters;
-    $('clearFilters').hidden = year === 'all' && status === 'all' && !search && $('sortSelect').value === 'period-asc';
+    $('clearFilters').hidden = !hasFilters && $('sortSelect').value === 'period-asc';
     $('statusFilter').title = $('statusFilter').selectedOptions[0].textContent;
     document.querySelectorAll('[data-year]').forEach(button => {
       const selected = button.dataset.year === year;
@@ -230,6 +266,7 @@
     $('emptyState').hidden = current.length !== 0;
     renderChart();
     renderSort();
+    renderPipelineOverview(baseRows);
     updateUrl();
   }
 
@@ -262,6 +299,9 @@
     $('workflowInfoHost').append($('workflowStepInfo'));
     const position = workflowPosition(row);
     const suspended = row.group === 'suspended';
+    $('detailPhaseNumber').textContent = position || '—';
+    $('dialogPhaseBadge').textContent = position ? `Fase ${position} de ${workflowStages.length}` : 'Fase não indicada';
+    $('dialogPhaseBadge').classList.toggle('is-suspended', suspended);
     $('pipelinePosition').textContent = position ? `Etapa ${position} de ${workflowStages.length}` : 'Etapa não indicada';
     $('pipelinePosition').classList.toggle('is-unknown', !position);
     $('pipelinePosition').classList.toggle('is-suspended', suspended);
@@ -269,7 +309,7 @@
     $('pipelineContext').classList.toggle('is-unknown', !position);
     $('pipelineContext').classList.toggle('is-suspended', suspended);
     $('pipelineContext').classList.toggle('is-final', position === workflowStages.length);
-    $('pipelineCurrentLabel').textContent = position ? (suspended ? 'FASE INFORMADA · GLOSA SUSPENSA' : 'ETAPA ATUAL') : 'SITUAÇÃO DO PROCESSO';
+    $('pipelineCurrentLabel').textContent = position ? `VOCÊ ESTÁ AQUI · FASE ${position} DE ${workflowStages.length}` : 'FASE NÃO INDICADA';
     $('pipelineCurrentTitle').textContent = position ? workflowStages[position - 1].title : row.status;
     $('pipelineCurrentNote').textContent = !position ?
       (suspended ? 'A glosa está suspensa. O andamento informado não identifica uma etapa deste fluxo.' : 'O andamento informado ainda não tem uma etapa definida neste fluxo.') :
@@ -279,7 +319,7 @@
     $('workflowSteps').innerHTML = workflowStages.map((stage, index) => {
       const number = index + 1;
       const state = !position ? 'is-unknown' : number < position ? 'is-past' : number === position ? 'is-current' : 'is-future';
-      const label = !position ? 'Etapa do fluxo' : number < position ? 'Anterior' : number === position ? 'Etapa atual' : number === position + 1 ? 'Próxima etapa' : 'Seguinte';
+      const label = !position ? 'Etapa do fluxo' : number < position ? 'Anterior' : number === position ? 'Você está aqui' : number === position + 1 ? 'Próxima etapa' : 'Seguinte';
       return `<li class="workflow-step ${state}"><button type="button" class="workflow-step-button" data-workflow-step="${number}" aria-controls="workflowStepInfo" aria-expanded="false"${number === position ? ' aria-current="step"' : ''} aria-label="Etapa ${number}: ${stage.title}. ${label}. Consultar explicação"><span class="workflow-number">${number}</span><span class="workflow-step-label"><span>${stage.title}</span><small>${label}</small></span></button></li>`;
     }).join('');
     $('workflowStepInfo').hidden = true;
@@ -310,6 +350,7 @@
   }
 
   function returnToOverview() {
+    selectedPhase = null;
     year = 'all';
     $('statusFilter').value = 'all';
     $('searchInput').value = '';
@@ -345,6 +386,22 @@
   }
 
   document.addEventListener('click', event => {
+    const phase = event.target.closest('[data-phase]');
+    if (phase) {
+      const number = Number(phase.dataset.phase);
+      if (selectedPhase === number) clearPhaseFilter();
+      else {
+        selectedPhase = number;
+        render();
+        $('phaseResultsTitle').focus({ preventScroll: true });
+        $('phaseResults').scrollIntoView({ block: 'nearest', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+      }
+      return;
+    }
+    if (event.target.closest('[data-clear-phase]')) {
+      clearPhaseFilter();
+      return;
+    }
     const workflowStep = event.target.closest('[data-workflow-step]');
     if (workflowStep && active) {
       showWorkflowStep(active, Number(workflowStep.dataset.workflowStep));
