@@ -252,6 +252,7 @@ th[aria-sort]{color:#416a49}
 .phase-card.is-active .phase-card-amount{border-color:#ffffff4a}
 .phase-card.is-active .phase-card-amount small{color:#d8e8d0}
 .phase-card.is-active .phase-card-amount strong{color:#fff}
+.phase-card .phase-card-amount:empty{border-color:transparent}
 .phase-results{padding:20px 24px 24px;border-top:1px solid #e3eadb;background:#fcfdf9}
 .phase-results-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-bottom:14px}
 .phase-results-heading h3{margin:0;color:#3c5e3e;font-size:13px;font-weight:600;line-height:1.6}
