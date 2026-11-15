@@ -56,7 +56,7 @@ A janela amplia o fluxo no computador e apresenta as etapas na vertical em telas
 
 ## Pipeline na visão geral
 
-A seção **Processos por fase atual** mostra as oito fases e suas quantidades, inclusive fases sem processos. As contagens usam a fase atual de cada registro, sem acumular processos nas etapas anteriores. A distribuição inicial é **2 / 0 / 1 / 0 / 2 / 0 / 2 / 1**.
+A seção **Processos por fase atual** mostra as oito fases e suas quantidades, inclusive fases sem processos. As contagens usam a fase atual de cada registro, sem acumular processos nas etapas anteriores. A visão geral apresenta as fases da **8 à 1**, da esquerda para a direita. Nessa ordem, a distribuição inicial é **1 / 2 / 0 / 2 / 0 / 1 / 0 / 2**, com títulos e quantidades maiores e contraste reforçado.
 
 Clicar em uma fase revela, no próprio painel, os períodos, números SEI, valores e andamentos dos processos correspondentes, com acesso aos detalhes. Os indicadores, gráficos, tabela e CSV acompanham a seleção. As quantidades das outras fases continuam visíveis para facilitar a troca de fase. Ano, situação e busca delimitam a base usada nas contagens. A seleção fica na URL como `fase=1` a `fase=8`.
 

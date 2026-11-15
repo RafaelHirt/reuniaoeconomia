@@ -213,8 +213,8 @@
       const suspended = processes.filter(row => row.group === 'suspended').length;
       const selected = number === selectedPhase;
       const countLabel = processes.length === 1 ? 'processo' : 'processos';
-      return `<li class="phase-overview-step"><button class="phase-card ${processes.length ? 'has-processes' : 'is-empty'} ${selected ? 'is-active' : ''} ${suspended ? 'has-suspended' : ''}" data-phase="${number}" aria-pressed="${selected}" aria-expanded="${selected}" aria-controls="phaseResults" aria-label="Fase ${number}: ${stage.title}, ${processes.length} ${countLabel}. Ver processos"><span class="phase-card-heading"><span class="phase-card-number">${number}</span><span>FASE ${number}</span></span><span class="phase-card-title">${stage.title}</span><span class="phase-card-quantity"><strong>${processes.length}</strong><span>${countLabel}</span></span>${suspended ? `<span class="phase-card-note">${suspended} ${suspended === 1 ? 'glosa suspensa' : 'glosas suspensas'}</span>` : ''}</button></li>`;
-    }).join('');
+      return `<li class="phase-overview-step"><button class="phase-card ${processes.length ? 'has-processes' : 'is-empty'} ${selected ? 'is-active' : ''} ${suspended ? 'has-suspended' : ''}" data-phase="${number}" aria-pressed="${selected}" aria-expanded="${selected}" aria-controls="phaseResults" aria-label="Fase ${number}: ${stage.title}, ${processes.length} ${countLabel}. Ver processos"><span class="phase-card-heading"><span class="phase-card-number">Fase ${number}</span>${icon('chevron')}</span><span class="phase-card-title">${stage.title}</span><span class="phase-card-quantity"><strong>${processes.length}</strong><span>${countLabel}</span></span><span class="phase-card-note"${suspended ? '' : ' aria-hidden="true"'}>${suspended ? `${suspended} ${suspended === 1 ? 'glosa suspensa' : 'glosas suspensas'}` : ''}</span></button></li>`;
+    }).reverse().join('');
     $('phaseResults').hidden = !selectedPhase;
     if (!selectedPhase) {
       $('phaseProcessRows').innerHTML = '';
