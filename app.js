@@ -31,6 +31,17 @@
   const badge = row => `<span class="status-badge ${row.group}">${row.status}</span>`;
   const seiUrl = row => row.seiUrl || 'https://sei.go.gov.br/sei/';
   const range = row => `${date(row.start)} a ${date(row.end)}`;
+  function phaseAmounts(rows) {
+    const assessed = rows.filter(row => Number.isInteger(row.cents));
+    const cents = assessed.reduce((sum, row) => sum + row.cents, 0);
+    const missing = rows.length - assessed.length;
+    const unknownOnly = rows.length > 0 && assessed.length === 0;
+    return {
+      cents, missing, unknownOnly,
+      label: unknownOnly ? 'Valor da fase' : missing ? 'Total parcial' : 'Total apurado',
+      value: unknownOnly ? 'Valor não apurado' : currency(cents)
+    };
+  }
   const params = new URLSearchParams(location.search);
   let records = [], current = [], situations = [], active = null, toastTimer;
   let tooltipTarget = null, tooltipHideTimer;
@@ -213,7 +224,8 @@
       const suspended = processes.filter(row => row.group === 'suspended').length;
       const selected = number === selectedPhase;
       const countLabel = processes.length === 1 ? 'processo' : 'processos';
-      return `<li class="phase-overview-step"><button class="phase-card ${processes.length ? 'has-processes' : 'is-empty'} ${selected ? 'is-active' : ''} ${suspended ? 'has-suspended' : ''}" data-phase="${number}" aria-pressed="${selected}" aria-expanded="${selected}" aria-controls="phaseResults" aria-label="Fase ${number}: ${stage.title}, ${processes.length} ${countLabel}. Ver processos"><span class="phase-card-heading"><span class="phase-card-number">Fase ${number}</span>${icon('chevron')}</span><span class="phase-card-title">${stage.title}</span><span class="phase-card-quantity"><strong>${processes.length}</strong><span>${countLabel}</span></span><span class="phase-card-note"${suspended ? '' : ' aria-hidden="true"'}>${suspended ? `${suspended} ${suspended === 1 ? 'glosa suspensa' : 'glosas suspensas'}` : ''}</span></button></li>`;
+      const amount = phaseAmounts(processes);
+      return `<li class="phase-overview-step"><button class="phase-card ${processes.length ? 'has-processes' : 'is-empty'} ${selected ? 'is-active' : ''} ${suspended ? 'has-suspended' : ''}" data-phase="${number}" aria-pressed="${selected}" aria-expanded="${selected}" aria-controls="phaseResults" aria-label="Fase ${number}: ${stage.title}, ${processes.length} ${countLabel}. ${amount.label}: ${amount.value}. Ver processos"><span class="phase-card-heading"><span class="phase-card-number">Fase ${number}</span>${icon('chevron')}</span><span class="phase-card-title">${stage.title}</span><span class="phase-card-quantity"><strong>${processes.length}</strong><span>${countLabel}</span></span><span class="phase-card-note"${suspended ? '' : ' aria-hidden="true"'}>${suspended ? `${suspended} ${suspended === 1 ? 'glosa suspensa' : 'glosas suspensas'}` : ''}</span><span class="phase-card-amount"><small>${amount.label}</small><strong>${amount.value.replace(/\u00a0/g, ' ')}</strong></span></button></li>`;
     }).reverse().join('');
     $('phaseResults').hidden = !selectedPhase;
     if (!selectedPhase) {
@@ -222,8 +234,14 @@
     }
     $('phaseResultsTitle').textContent = `Fase ${selectedPhase} · ${workflowStages[selectedPhase - 1].title}`;
     $('phaseResultsCount').textContent = `${current.length} ${current.length === 1 ? 'processo nesta fase' : 'processos nesta fase'}`;
+    const amount = phaseAmounts(current);
+    $('phaseAmountLabel').textContent = `${amount.label} nesta fase`;
+    $('phaseAmountValue').textContent = amount.value;
+    $('phaseAmountNote').textContent = !current.length ? 'Nenhum processo nesta fase.' :
+      amount.missing ? `${amount.missing} ${amount.missing === 1 ? 'processo com valor não apurado' : 'processos com valor não apurado'}${amount.unknownOnly ? '.' : amount.missing === 1 ? '; não incluído na soma.' : '; não incluídos na soma.'}` :
+      current.some(row => row.group === 'suspended') ? 'Inclui o valor da glosa suspensa.' : 'Soma dos valores apurados dos processos desta fase.';
     $('phaseEmpty').hidden = current.length !== 0;
-    $('phaseProcessRows').innerHTML = current.map(row => `<li class="phase-process" data-process-id="${row.id}"><div class="phase-process-reference"><strong>${row.label} ${row.year}</strong><span>${range(row)}</span><a class="phase-process-sei" data-sei="${row.id}" href="${seiUrl(row)}" target="_blank" rel="noopener noreferrer" aria-label="Abrir SEI interno, processo ${row.id}">SEI ${row.id}${icon('external')}</a></div><div class="phase-process-status">${badge(row)}<p>${row.description}</p></div><div class="phase-process-action"><strong>${row.cents === null ? 'Valor não apurado' : currency(row.cents)}</strong><button class="button secondary" data-detail="${row.id}" aria-label="Ver detalhes e fluxo do processo ${row.id}">Ver detalhes${icon('chevron')}</button></div></li>`).join('');
+    $('phaseProcessRows').innerHTML = current.map(row => `<li class="phase-process" data-process-id="${row.id}"><div class="phase-process-reference"><strong>${row.label} ${row.year}</strong><span>${range(row)}</span><a class="phase-process-sei" data-sei="${row.id}" href="${seiUrl(row)}" target="_blank" rel="noopener noreferrer" aria-label="Abrir SEI interno, processo ${row.id}">SEI ${row.id}${icon('external')}</a></div><div class="phase-process-status">${badge(row)}<p>${row.description}</p></div><div class="phase-process-action"><strong>${row.cents === null ? 'Valor não apurado' : currency(row.cents)}</strong><button class="button primary phase-details-button" data-detail="${row.id}" aria-label="Ver mais detalhes e fluxo do processo ${row.id}">Ver mais detalhes${icon('chevron')}</button></div></li>`).join('');
   }
 
   function clearPhaseFilter() {
