@@ -88,9 +88,9 @@
       const value = row.cents === null ? 'N/A' : new Intl.NumberFormat('pt-BR', {
         minimumFractionDigits: 2, maximumFractionDigits: 2
       }).format(row.cents / 100000000);
-      const height = row.cents === null ? 12 : (row.cents / 1200000000) * 149;
+      const height = row.cents === null ? '12px' : `${row.cents / 1200000000 * 100}%`;
       const label = row.cents === null ? 'valor não apurado' : currency(row.cents);
-      return `<button class="bar-column ${row.cents === null ? 'missing' : ''}" data-detail="${row.id}" title="${row.label} ${row.year}: ${label}" aria-label="${row.label} ${row.year}, ${label}, abrir processo ${row.id}"><span class="bar-space"><span class="bar-value">${value}</span><span class="bar" style="height:${height}px"></span></span><span class="bar-label">${row.label}</span><span class="bar-year">${row.year}</span></button>`;
+      return `<button class="bar-column ${row.cents === null ? 'missing' : ''}" data-detail="${row.id}" title="${row.label} ${row.year}: ${label}" aria-label="${row.label} ${row.year}, ${label}, abrir processo ${row.id}"><span class="bar-space"><span class="bar-value">${value}</span><span class="bar" style="height:${height}"></span></span><span class="bar-label">${row.label}</span><span class="bar-year">${row.year}</span></button>`;
     }).join('');
     if (!current.length) $('barChart').innerHTML = '<span class="chart-empty">Nenhum processo neste recorte</span>';
 
@@ -132,7 +132,7 @@
     $('resultBadge').textContent = current.length;
     $('resultText').textContent = `Exibindo ${current.length} de ${records.length} processos`;
     $('scopeText').textContent = (year === 'all' && status === 'all' && !search) ? 'Visão de todos os processos' :
-      `${current.length} ${current.length === 1 ? 'processo no' : 'processos no'} recorte selecionado`;
+      'Filtros aplicados';
     $('clearFilters').hidden = year === 'all' && status === 'all' && !search && $('sortSelect').value === 'period-asc';
     $('statusFilter').title = $('statusFilter').selectedOptions[0].textContent;
     document.querySelectorAll('[data-year]').forEach(button => {

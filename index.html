@@ -7,7 +7,7 @@
   <meta name="description" content="Glosas HUGO: dashboard principal de acompanhamento COMACG, com processos SEI, períodos, valores apurados e andamento.">
   <title>Glosas HUGO | Dashboard COMACG</title>
   <meta property="og:title" content="Glosas HUGO · Dashboard COMACG">
-  <meta property="og:description" content="Processos, valores e andamento em um só lugar.">
+  <meta property="og:description" content="Glosas HUGO · Acompanhamento COMACG.">
   <meta property="og:type" content="website">
   <meta property="og:image" content="https://glosas-hugo.netlify.app/assets/glosas-hugo-capa.png">
   <meta name="twitter:card" content="summary_large_image">
@@ -40,17 +40,17 @@
 <aside class="sidebar" aria-label="Navegação principal">
  <a class="brand" href="#overview" aria-label="Glosas HUGO, dashboard principal"><span class="brand-mark"><i></i><i></i><i></i></span><span>GLOSAS HUGO<small>COMACG · ACOMPANHAMENTO</small></span></a>
  <div class="nav-label">ACOMPANHAMENTO</div>
- <nav><a class="nav-item active" href="#overview" data-nav="overview"><svg><use href="#i-grid"/></svg>Visão geral</a><a class="nav-item" href="#processes" data-nav="processes"><svg><use href="#i-file"/></svg>Processos<span class="nav-count">8</span></a><a class="nav-item" href="#periods" data-nav="periods"><svg><use href="#i-calendar"/></svg>Por período</a></nav>
- <div class="sidebar-bottom"><img class="official-logo" src="assets/logo-ses-clara.png" alt="SUS · Secretaria da Saúde · Goiás"><div class="sidebar-context"><span class="context-icon">H</span><div><strong>HUGO</strong><small>Unidade acompanhada</small></div><span class="context-dot"></span></div><p>Clareza para acompanhar<br>cada etapa do processo.</p></div>
+ <nav><a class="nav-item active" href="#overview" data-nav="overview"><svg><use href="#i-grid"/></svg>Visão geral</a><a class="nav-item" href="#processes" data-nav="processes"><svg><use href="#i-file"/></svg>Processos<span class="nav-count">8</span></a></nav>
+ <div class="sidebar-bottom"><img class="official-logo" src="assets/logo-ses-clara.png" alt="SUS · Secretaria da Saúde · Goiás"><div class="sidebar-context"><span class="context-icon">H</span><div><strong>HUGO</strong><small>Unidade acompanhada</small></div><span class="context-dot"></span></div></div>
 </aside>
 <div class="app-shell">
- <header class="topbar"><div class="breadcrumb">Painéis<svg><use href="#i-chevron"/></svg><strong>Glosas HUGO</strong></div><span class="source-label"><span></span>Base de informações fornecida</span></header>
+ <header class="topbar"><div class="breadcrumb">Painéis<svg><use href="#i-chevron"/></svg><strong>Glosas HUGO</strong></div></header>
  <main id="main">
-  <section class="page-heading" id="overview"><div><span class="eyebrow">DASHBOARD PRINCIPAL · COMACG</span><h1>Glosas HUGO</h1><p>Processos, valores e andamento em um só lugar.</p></div><div class="heading-actions"><button class="button secondary" id="printButton"><svg><use href="#i-print"/></svg>Imprimir</button><button class="button primary" id="exportButton"><svg><use href="#i-download"/></svg>Exportar CSV</button></div></section>
+  <section class="page-heading" id="overview"><div><span class="eyebrow">DASHBOARD PRINCIPAL · COMACG</span><h1>Glosas HUGO</h1></div><div class="heading-actions"><button class="button secondary" id="printButton"><svg><use href="#i-print"/></svg>Imprimir</button><button class="button primary" id="exportButton"><svg><use href="#i-download"/></svg>Exportar CSV</button></div></section>
   <div class="scope-line"><span><svg><use href="#i-calendar"/></svg>Períodos de <strong>07 ago 2024 a 30 set 2026</strong></span><span id="scopeText">Visão de todos os processos</span></div>
   <section class="metrics" aria-label="Resumo dos processos" aria-live="polite">
    <article class="metric metric-featured"><div class="metric-label">Total dos valores apurados<svg><use href="#i-coins"/></svg></div><div class="metric-value" id="metricTotal">R$ 29.037.553,29</div><div class="metric-note" id="metricTotalNote">Inclui o valor da glosa suspensa</div></article>
-   <article class="metric"><div class="metric-label">Processos acompanhados<svg><use href="#i-file"/></svg></div><div class="metric-value" id="metricCount">08</div><div class="metric-note">No recorte selecionado</div></article>
+   <article class="metric"><div class="metric-label">Processos acompanhados<svg><use href="#i-file"/></svg></div><div class="metric-value" id="metricCount">08</div></article>
   </section>
   <section class="analytics" aria-label="Visão dos valores e situações">
    <article class="panel financial-panel" id="periods"><div class="panel-heading"><div><h2>Valores por período</h2><p>Distribuição dos valores apurados</p></div><span class="unit-label">R$ milhões</span></div><div class="chart-wrap"><div class="chart-axis" aria-hidden="true"><span>12</span><span>9</span><span>6</span><span>3</span><span>0</span></div><div class="bar-chart" id="barChart" aria-label="Valores apurados por período"></div></div><div class="chart-foot"><span><i class="legend-square"></i>Valor apurado</span><span><i class="legend-empty"></i>Valor não apurado</span></div></article>
