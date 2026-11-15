@@ -1,0 +1,10 @@
+[
+ {"id":"202500010000059","start":"2024-08-07","end":"2024-12-31","label":"Ago–dez","year":2024,"cents":1127707158,"group":"suspended","status":"Glosa suspensa","description":"Glosa suspensa"},
+ {"id":"202500010036854","start":"2025-01-01","end":"2025-03-31","label":"Jan–mar","year":2025,"cents":709731502,"group":"dispatch","status":"Despacho em elaboração","description":"Despacho COMACG em elaboração após análise da SPAIS e SUREG"},
+ {"id":"202500010057071","start":"2025-04-01","end":"2025-06-30","label":"Abr–jun","year":2025,"cents":431538317,"group":"dispatch","status":"Despacho em elaboração","description":"Despacho COMACG em elaboração – análise de recurso hierárquico"},
+ {"id":"202500010086387","start":"2025-07-01","end":"2025-09-30","label":"Jul–set","year":2025,"cents":211592784,"group":"waiting","status":"Aguardando despacho SPAIS","description":"Aguardando despacho SPAIS"},
+ {"id":"202600010009060","start":"2025-10-01","end":"2025-12-31","label":"Out–dez","year":2025,"cents":211592784,"group":"dispatch","status":"Despacho em elaboração","description":"Despacho COMACG em elaboração após análise da SPAIS e SUREG"},
+ {"id":"202600010045963","start":"2026-01-01","end":"2026-03-31","label":"Jan–mar","year":2026,"cents":211592784,"group":"report","status":"Relatório em elaboração","description":"Relatório COMACG em elaboração após análise da SPAIS e SUREG"},
+ {"id":"202600010056169","start":"2026-04-01","end":"2026-06-30","label":"Abr–jun","year":2026,"cents":null,"group":"report","status":"Relatório preliminar em elaboração","description":"Relatório preliminar COMACG em elaboração"},
+ {"id":"202600010089970","start":"2026-07-01","end":"2026-09-30","label":"Jul–set","year":2026,"cents":null,"group":"report","status":"Relatório preliminar em elaboração","description":"Relatório preliminar COMACG em elaboração"}
+]

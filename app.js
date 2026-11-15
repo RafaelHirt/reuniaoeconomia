@@ -1,267 +1,108 @@
-import { UNITS, HEAL, PHASES, DP_TOTALS, HEMODIALYSIS_TOTAL, SCENARIOS, money, quantity, percentage, calculateScenario, calculateHealCoverage, schedule, validMonths } from './budget.js';
+'use strict';
+(() => {
+ const $ = id => document.getElementById(id);
+ const groups = [
+  { id:'dispatch', label:'Despacho em elaboração', color:'#37745c' },
+  { id:'report', label:'Relatório em elaboração', color:'#9a8cb5' },
+  { id:'waiting', label:'Aguardando SPAIS', color:'#d1b477' },
+  { id:'suspended', label:'Glosa suspensa', color:'#b99d6c' }
+ ];
+ const currency = cents => new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(cents/100);
+ const date = iso => iso.split('-').reverse().join('/');
+ const normalize = text => text.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+ const icon = name => `<svg aria-hidden="true"><use href="#i-${name}"/></svg>`;
+ const badge = row => `<span class="status-badge ${row.group}">${row.status}</span>`;
+ const seiUrl = row => row.seiUrl || 'https://sei.go.gov.br/sei/';
+ const range = row => `${date(row.start)} a ${date(row.end)}`;
+ let records = [], current = [], active = null, year = 'all', toastTimer;
+ const params = new URLSearchParams(location.search);
+ if(['2024','2025','2026'].includes(params.get('ano'))) year = params.get('ano');
+ if(groups.some(g=>g.id===params.get('situacao'))) $('statusFilter').value=params.get('situacao');
+ $('searchInput').value=params.get('busca')||'';
 
-const slides = [...document.querySelectorAll('.slide')];
-const links = [...document.querySelectorAll('.sidebar [data-slide]')];
-const previous = document.querySelector('#previous');
-const next = document.querySelector('#next');
-const modeToggle = document.querySelector('#mode-toggle');
-const agendaToggle = document.querySelector('#agenda-toggle');
-const agenda = document.querySelector('#agenda-menu');
-const agendaClose = document.querySelector('#agenda-close');
-const backdrop = document.querySelector('#menu-backdrop');
-let current = 0;
-
-function budgetMetric(label, value, detail, emphasis = false, key = '') {
-  return `<div class="budget-metric${emphasis ? ' budget-metric-emphasis' : ''}"><span>${label}</span><strong${key ? ` data-total="${key}"` : ''}>${money(value)}</strong>${detail ? `<small>${detail}</small>` : ''}</div>`;
-}
-
-function renderTimeline(result) {
-  return `<div class="phase-timeline" aria-label="Cronograma de janeiro a dezembro de 2027">${schedule(result.months).map(item => `<div class="phase-period phase-${item.phase + 1}" style="flex:${item.months}" title="${PHASES[item.phase]}: ${item.label}, ${item.months} meses"><div><strong>${PHASES[item.phase]}</strong><span>${item.label}</span></div><small>${item.months} ${item.months === 1 ? 'mês' : 'meses'}</small></div>`).join('')}</div>`;
-}
-
-function renderScenario(target, result, showMetrics = true, costLabel = 'Termo Aditivo das fases simuladas') {
-  const methodId = `${target.id}-method`;
-  const formula = result.months.flatMap((months, phase) => months ? [`(${months} × custeio mensal da ${PHASES[phase]})`] : []).join(' + ');
-  target.innerHTML = `${showMetrics ? `<div class="budget-metrics">${budgetMetric('PLOA 2027 · anual', result.ploa, 'Seis policlínicas · valor mensal × 12', false, 'ploa')}${budgetMetric(`${costLabel} · anual`, result.needed, '', false, 'needed')}${budgetMetric('Acréscimo à PLOA · anual', result.difference, `${percentage(result.increase)} acima da PLOA`, true, 'difference')}</div>` : ''}
-    ${renderTimeline(result)}
-    <div class="scenario-columns">
-      <section class="budget-table-card">
-        <div class="table-card-heading"><h2>Custeio e diferença para a PLOA</h2><span>VALORES ANUAIS</span></div>
-        <p class="budget-scroll-hint"><span aria-hidden="true">↔</span> Deslize para ver todas as colunas.</p>
-        <div class="budget-table-scroll" role="region" aria-label="Custos anuais e diferença para a PLOA por policlínica" tabindex="0">
-          <table class="annual-budget-table" aria-describedby="${methodId}"><caption class="sr-only">Valores anuais de 2027. A diferença é o valor anual do ${costLabel} menos a PLOA anual.</caption><colgroup><col class="budget-unit-col"><col span="3"></colgroup><thead><tr><th scope="col">Unidade</th><th scope="col">PLOA 2027</th><th scope="col">${costLabel}</th><th scope="col">Diferença<br>Termo Aditivo − PLOA</th></tr></thead><tbody>${result.rows.map(row => `<tr><th scope="row">${row.name}</th><td>${money(row.ploa)}</td><td>${money(row.needed)}</td><td>${money(row.difference)}</td></tr>`).join('')}</tbody><tfoot><tr><th scope="row">Total</th><td data-total="ploa">${money(result.ploa)}</td><td data-total="needed">${money(result.needed)}</td><td data-total="difference">${money(result.difference)}</td></tr></tfoot></table>
-        </div>
-      </section>
-      <section class="budget-table-card dp-card">
-        <div class="table-card-heading"><h2>DP por fase e Hemodiálise</h2><span>QUANTIDADE MÊS</span></div>
-        <p class="budget-scroll-hint"><span aria-hidden="true">↔</span> Deslize para ver todas as colunas.</p>
-        <div class="budget-table-scroll" role="region" aria-label="DP por fase e quantidade de Hemodiálise conforme a planilha" tabindex="0">
-          <table class="dp-table"><caption class="sr-only">DP previstas por unidade e fase, com a quantidade de Hemodiálise informada na planilha. Hemodiálise não está discriminada por fase.</caption><colgroup><col class="dp-unit-col"><col span="3" class="dp-phase-col"><col class="hemodialysis-col"></colgroup><thead><tr><th scope="col">Unidade</th>${PHASES.map((phase, i) => `<th scope="col" class="${result.months[i] ? 'active-phase' : 'inactive-phase'}">${phase}<small>${result.months[i]} ${result.months[i] === 1 ? 'mês' : 'meses'}</small></th>`).join('')}<th scope="col" class="hemodialysis-cell">Hemodiálise</th></tr></thead><tbody>${UNITS.map(unit => `<tr><th scope="row">${unit.name}</th>${unit.dp.map((value, i) => `<td class="${result.months[i] ? 'active-phase' : 'inactive-phase'}">${value}</td>`).join('')}<td class="hemodialysis-cell">${quantity(unit.hemodialysis)}</td></tr>`).join('')}</tbody><tfoot><tr><th scope="row">Total</th>${DP_TOTALS.map((value, i) => `<td class="${result.months[i] ? 'active-phase' : 'inactive-phase'}">${value}</td>`).join('')}<td class="hemodialysis-cell">${quantity(HEMODIALYSIS_TOTAL)}</td></tr></tfoot></table>
-        </div>
-      </section>
-    </div>
-    <div class="scenario-method" id="${methodId}"><p><strong>${costLabel} · anual</strong> = ${formula}. <strong>Diferença</strong> = ${costLabel} (anual) − PLOA anual.</p><p>PLOA anual = valor mensal informado × 12, sem reajustes. DP previstas em cada fase; fases com 0 meses não compõem o custeio deste cenário. Hemodiálise: quantidade informada na planilha, sem discriminação por fase.</p></div>`;
-}
-
-function renderComparison(simulation) {
-  const comparisons = [
-    { key: 'phased', label: 'Cenário I', result: calculateScenario(SCENARIOS.phased) },
-    { key: 'first', label: 'Cenário II', result: calculateScenario(SCENARIOS.first) },
-    { key: 'simulation', label: 'Sua simulação', result: simulation }
-  ];
-  document.querySelector('#scenario-comparison').innerHTML = `<div class="comparison-heading"><h2>Comparação anual</h2><span>PLOA 2027: <strong>${money(simulation.ploa)}</strong></span></div><p class="budget-scroll-hint"><span aria-hidden="true">↔</span> Deslize para comparar os valores.</p><div class="budget-table-scroll comparison-scroll" role="region" aria-label="Comparação dos dois cenários e da simulação" tabindex="0"><table class="scenario-summary-table"><caption class="sr-only">Comparação anual para as seis policlínicas, com a mesma PLOA em todos os cenários.</caption><thead><tr><th scope="col">Cenário</th><th scope="col">Meses nas fases I / II / III</th><th scope="col">Termo Aditivo · anual</th><th scope="col">Acréscimo à PLOA</th><th scope="col">Acréscimo %</th></tr></thead><tbody>${comparisons.map(({ key, label, result }) => `<tr data-scenario-row="${key}" class="${key === 'simulation' ? 'simulation-row' : ''}"><th scope="row">${label}</th><td>${result.months.join(' / ')}</td><td data-total="needed">${money(result.needed)}</td><td data-total="difference">${money(result.difference)}</td><td>${percentage(result.increase)}</td></tr>`).join('')}</tbody></table></div>`;
-}
-
-function initializeSimulation() {
-  const inputs = [...document.querySelectorAll('.month-fields input')];
-  const status = document.querySelector('#simulation-validation');
-  const results = document.querySelector('#simulation-results');
-  const presets = [...document.querySelectorAll('[data-months]')];
-  function update() {
-    const months = inputs.map(input => input.valueAsNumber);
-    const valid = validMonths(months);
-    const validValues = months.every(value => Number.isInteger(value) && value >= 0 && value <= 12);
-    inputs.forEach(input => input.setAttribute('aria-invalid', String(!valid)));
-    results.hidden = !valid;
-    document.querySelector('#simulation-print-error').hidden = valid;
-    status.classList.toggle('is-invalid', !valid);
-    presets.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.months === months.join(','))));
-    if (!valid) {
-      status.textContent = validValues ? `Distribua exatamente 12 meses. Total informado: ${months.reduce((sum, value) => sum + value, 0)} meses.` : 'Preencha cada fase com um número inteiro de 0 a 12 meses.';
-      document.querySelector('#simulation-announcement').textContent = 'Simulação não calculada. Verifique a distribuição dos meses.';
-      fitPresentation();
-      return;
-    }
-    const simulation = calculateScenario(months);
-    status.textContent = '12 de 12 meses distribuídos. As fases seguem a ordem I → II → III.';
-    renderComparison(simulation);
-    renderScenario(document.querySelector('#scenario-simulation'), simulation, false);
-    document.querySelector('#simulation-announcement').textContent = `Termo Aditivo anual: ${money(simulation.needed)}. Acréscimo à PLOA: ${money(simulation.difference)}, equivalente a ${percentage(simulation.increase)}.`;
-    fitPresentation();
-  }
-  inputs.forEach(input => input.addEventListener('input', update));
-  presets.forEach(button => button.addEventListener('click', () => {
-    button.dataset.months.split(',').forEach((value, index) => { inputs[index].value = value; });
-    update();
-  }));
-  document.querySelector('#simulation-controls').hidden = false;
-  update();
-}
-
-function initializeBudgetViews() {
-  renderScenario(document.querySelector('#scenario-first'), calculateScenario(SCENARIOS.first), true, 'Termo Aditivo 1º Fase');
-  renderScenario(document.querySelector('#scenario-phased'), calculateScenario(SCENARIOS.phased), true, 'Termo Aditivo Fases RD');
-  const coverage = calculateHealCoverage();
-  const periods = [
-    { label: 'Janeiro a abril/2027', detail: '4 meses com o custeio atual', ...coverage.periods[0] },
-    { label: 'Maio a dezembro/2027', detail: '8 meses após o desconto', ...coverage.periods[1] }
-  ];
-  document.querySelector('#heal-report').innerHTML = `<div class="budget-metrics heal-metrics">${budgetMetric('PLOA 2027 · mensal', HEAL.ploa, 'Redução projetada desde janeiro', false, 'ploa')}${budgetMetric('Custeio atual · mensal', HEAL.current, 'Mantido de janeiro a abril', false, 'current')}${budgetMetric('Redução mensal projetada', coverage.monthlyReduction, 'Desconto a partir de maio/2027', true, 'difference')}</div>
-    <div class="heal-difference heal-coverage"><div><span>COBERTURA ADICIONAL · JANEIRO A ABRIL/2027</span><h2>Recursos adicionais a encontrar</h2><p>${coverage.monthsBeforeReduction} meses × ${money(coverage.monthlyReduction)} de redução mensal prevista</p></div><strong data-coverage="additional">${money(coverage.additional)}</strong></div>
-    <section class="budget-table-card heal-impact-card"><div class="table-card-heading"><h2>Impacto no orçamento de 2027</h2><span>VALORES POR PERÍODO</span></div><p class="budget-scroll-hint"><span aria-hidden="true">↔</span> Deslize para consultar todos os valores.</p><div class="budget-table-scroll" role="region" aria-label="Custeio do HEAL antes e depois do desconto de maio de 2027" tabindex="0"><table class="heal-impact-table" aria-describedby="heal-coverage-method"><caption class="sr-only">Cobertura adicional para manter o custeio atual de janeiro a abril de 2027, com redução a partir de maio.</caption><colgroup><col class="heal-period-col"><col span="3"></colgroup><thead><tr><th scope="col">Período</th><th scope="col">Previsto na PLOA</th><th scope="col">Custeio estimado</th><th scope="col">Cobertura adicional</th></tr></thead><tbody>${periods.map(period => `<tr><th scope="row">${period.label}<small>${period.detail}</small></th><td data-label="Previsto na PLOA">${money(period.ploa)}</td><td data-label="Custeio estimado">${money(period.needed)}</td><td data-label="Cobertura adicional">${money(period.difference)}</td></tr>`).join('')}</tbody><tfoot><tr><th scope="row">Total de 2027</th><td data-label="Previsto na PLOA" data-coverage="ploa">${money(coverage.ploa)}</td><td data-label="Custeio estimado" data-coverage="needed">${money(coverage.needed)}</td><td data-label="Cobertura adicional" data-coverage="additional">${money(coverage.additional)}</td></tr></tfoot></table></div></section>
-    <p class="heal-note" id="heal-coverage-method">A redução foi projetada desde janeiro/2027. Como o desconto começa em maio, a cobertura considera os quatro meses completos de janeiro a abril com o custeio atual. O HEAL é apresentado separadamente dos cenários das policlínicas.</p>`;
-  initializeSimulation();
-}
-
-function fitPresentation() {
-  const presenting = document.body.classList.contains('presentation-mode');
-  if (!presenting) {
-    slides.forEach(item => { item.style.transform = ''; item.style.top = ''; item.style.width = ''; item.style.left = ''; });
-    return;
-  }
-  const stage = document.querySelector('#presentation');
-  const slide = slides[current];
-  const minimumWidth = Number(slide.dataset.minWidth) || (stage.clientWidth < 620 ? 800 : 0);
-  slide.style.width = `${Math.min(1320, Math.max(stage.clientWidth, minimumWidth))}px`;
-  slide.style.transform = '';
-  const scale = Math.min(1, stage.clientWidth / slide.offsetWidth, stage.clientHeight / slide.offsetHeight);
-  slide.style.transformOrigin = 'top left';
-  slide.style.transform = `scale(${scale})`;
-  slide.style.left = `${Math.max(0, (stage.clientWidth - slide.offsetWidth * scale) / 2)}px`;
-  slide.style.top = `${Math.max(0, (stage.clientHeight - slide.offsetHeight * scale) / 2)}px`;
-}
-
-function showSlide(index, moveFocus = false) {
-  current = Math.min(Math.max(index, 0), slides.length - 1);
-  slides.forEach((slide, i) => { slide.hidden = i !== current; });
-  links.forEach((link, i) => {
-    link.classList.toggle('active', i === current);
-    if (i === current) link.setAttribute('aria-current', 'step');
-    else link.removeAttribute('aria-current');
+ function updateUrl(){
+  const q = new URLSearchParams();
+  if(year!=='all') q.set('ano',year);
+  if($('statusFilter').value!=='all')q.set('situacao',$('statusFilter').value);
+  if($('searchInput').value.trim())q.set('busca',$('searchInput').value.trim());
+  history.replaceState(null,'',location.pathname+(q.size?'?'+q:'')+location.hash);
+ }
+ function render(){
+  const search=normalize($('searchInput').value.trim()), status=$('statusFilter').value;
+  current=records.filter(r=>(year==='all'||r.year===Number(year))&&(status==='all'||r.group===status)&&(!search||normalize(`${r.id} ${r.description} ${r.label} ${r.year} ${range(r)}`).includes(search)));
+  const sort=$('sortSelect').value;
+  current.sort((a,b)=>{
+   if(sort.startsWith('value')){
+    if(a.cents===null&&b.cents===null)return a.start.localeCompare(b.start);
+    if(a.cents===null)return 1;if(b.cents===null)return -1;
+    return sort==='value-desc'?b.cents-a.cents:a.cents-b.cents;
+   }
+   return sort==='period-desc'?b.start.localeCompare(a.start):a.start.localeCompare(b.start);
   });
-  document.querySelectorAll('[data-pauta-link]').forEach(link => {
-    if (link.dataset.pautaLink === slides[current].dataset.pauta) link.setAttribute('aria-current', 'step');
-    else link.removeAttribute('aria-current');
-  });
-  document.querySelector('#counter').textContent = `${String(current + 1).padStart(2, '0')} / ${String(slides.length).padStart(2, '0')}`;
-  document.querySelector('#section-name').textContent = links[current].textContent.slice(2).trim();
-  document.querySelector('#progress-fill').style.width = `${(current + 1) / slides.length * 100}%`;
-  document.querySelector('.progress').setAttribute('aria-valuenow', String(current + 1));
-  document.querySelector('.progress').setAttribute('aria-valuemax', String(slides.length));
-  previous.disabled = current === 0;
-  next.disabled = current === slides.length - 1;
-  const meetingName = current === 0 ? 'Reunião SUBPAS' : 'Reunião com a SUBPAS';
-  document.querySelector('#meeting-name').textContent = meetingName;
-  document.querySelector('#meeting-partner').textContent = current === 0 ? 'SES-GO / SUPECC' : 'SES-GO / SUBPAS';
-  document.title = `${slides[current].querySelector('h1').textContent.replace(/\s+/g, ' ').trim()} • ${meetingName}`;
-  fitPresentation();
-  if (moveFocus) {
-    slides[current].scrollTop = 0;
-    const heading = slides[current].querySelector('h1');
-    heading.setAttribute('tabindex', '-1');
-    heading.focus({ preventScroll: true });
-    window.scrollTo({ top: 0, behavior: 'instant' });
-    const enteredSlide = slides[current];
-    requestAnimationFrame(() => {
-      if (slides[current] === enteredSlide) window.scrollTo({ top: 0, behavior: 'instant' });
-    });
-    if (matchMedia('(max-width: 900px)').matches && !document.body.classList.contains('presentation-mode')) {
-      links[current].scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'instant' });
-    }
-  }
-}
-
-function closeAgenda(restoreFocus = false) {
-  const wasOpen = document.body.classList.contains('menu-open');
-  document.body.classList.remove('menu-open');
-  agendaToggle.setAttribute('aria-expanded', 'false');
-  backdrop.hidden = true;
-  agenda.removeAttribute('role');
-  agenda.removeAttribute('aria-modal');
-  if (restoreFocus && wasOpen) agendaToggle.focus({ preventScroll: true });
-}
-function openAgenda() {
-  document.body.classList.add('menu-open');
-  agendaToggle.setAttribute('aria-expanded', 'true');
-  backdrop.hidden = false;
-  agenda.setAttribute('role', 'dialog');
-  agenda.setAttribute('aria-modal', 'true');
-  agenda.setAttribute('aria-label', 'Pautas da reunião');
-  links[current].focus({ preventScroll: true });
-}
-function navigate(index) {
-  const target = Math.min(Math.max(index, 0), slides.length - 1);
-  closeAgenda();
-  if (target !== current) history.pushState(null, '', `#${slides[target].id}`);
-  showSlide(target, true);
-}
-function syncHash() {
-  const index = slides.findIndex(slide => `#${slide.id}` === location.hash);
-  closeAgenda();
-  showSlide(index < 0 ? 0 : index, true);
-}
-function setPresentation(enabled) {
-  closeAgenda();
-  document.body.classList.toggle('presentation-mode', enabled);
-  modeToggle.setAttribute('aria-pressed', String(enabled));
-  modeToggle.textContent = enabled ? 'Modo leitura' : 'Apresentar';
-  fitPresentation();
-  window.scrollTo({ top: 0, behavior: 'instant' });
-}
-
-previous.addEventListener('click', () => navigate(current - 1));
-next.addEventListener('click', () => navigate(current + 1));
-document.querySelector('#begin').addEventListener('click', () => navigate(1));
-modeToggle.addEventListener('click', () => setPresentation(!document.body.classList.contains('presentation-mode')));
-agendaToggle.addEventListener('click', () => document.body.classList.contains('menu-open') ? closeAgenda(true) : openAgenda());
-agendaClose.addEventListener('click', () => closeAgenda(true));
-backdrop.addEventListener('click', () => closeAgenda(true));
-window.addEventListener('hashchange', syncHash);
-window.addEventListener('popstate', syncHash);
-document.querySelectorAll('a[href^="#"]').forEach(link => {
-  const index = slides.findIndex(slide => `#${slide.id}` === link.getAttribute('href'));
-  if (index < 0) return;
-  link.addEventListener('click', event => {
-    if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
-    event.preventDefault();
-    navigate(index);
-  });
-});
-document.addEventListener('keydown', event => {
-  if (event.key === 'Escape') {
-    if (document.body.classList.contains('menu-open')) closeAgenda(true);
-    else if (document.body.classList.contains('presentation-mode')) setPresentation(false);
-    return;
-  }
-  if (document.body.classList.contains('menu-open')) {
-    if (event.key === 'Tab') {
-      const items = [...agenda.querySelectorAll('a, button')];
-      const first = items[0]; const last = items[items.length - 1];
-      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
-      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
-    }
-    return;
-  }
-  if (event.altKey || event.ctrlKey || event.metaKey || ['INPUT', 'TEXTAREA', 'SELECT'].includes(event.target.tagName)) return;
-  if (event.target.closest('.budget-table-scroll, .simulation-controls')) return;
-  if (['ArrowRight', 'PageDown'].includes(event.key)) { event.preventDefault(); navigate(current + 1); }
-  if (['ArrowLeft', 'PageUp'].includes(event.key)) { event.preventDefault(); navigate(current - 1); }
-  if (event.key === 'Home') { event.preventDefault(); navigate(0); }
-  if (event.key === 'End') { event.preventDefault(); navigate(slides.length - 1); }
-});
-document.querySelector('.skip-link').addEventListener('click', event => {
-  event.preventDefault();
-  document.querySelector('#presentation').focus({ preventScroll: true });
-});
-document.querySelector('#print').addEventListener('click', () => window.print());
-const fullscreenButton = document.querySelector('#fullscreen');
-if (!document.fullscreenEnabled) fullscreenButton.hidden = true;
-fullscreenButton.addEventListener('click', async () => {
-  try {
-    if (document.fullscreenElement) await document.exitFullscreen();
-    else await document.documentElement.requestFullscreen();
-  } catch { fullscreenButton.textContent = 'Tela cheia indisponível'; }
-});
-document.addEventListener('fullscreenchange', () => {
-  fullscreenButton.textContent = document.fullscreenElement ? 'Sair da tela cheia' : 'Tela cheia';
-  fitPresentation();
-});
-window.addEventListener('resize', fitPresentation);
-window.addEventListener('load', () => {
-  fitPresentation();
-  setTimeout(() => window.scrollTo({ top: 0, behavior: 'instant' }), 0);
-});
-document.querySelectorAll('img').forEach(img => img.addEventListener('load', fitPresentation));
-initializeBudgetViews();
-setPresentation(matchMedia('(min-width: 901px)').matches);
-syncHash();
+  const withValue=current.filter(r=>r.cents!==null), total=withValue.reduce((s,r)=>s+r.cents,0);
+  $('metricTotal').textContent=currency(total);
+  $('metricCount').textContent=String(current.length).padStart(2,'0');
+  $('metricDraft').textContent=String(current.filter(r=>['dispatch','report'].includes(r.group)).length).padStart(2,'0');
+  $('metricMissing').textContent=String(current.length-withValue.length).padStart(2,'0');
+  $('metricTotalNote').textContent=`${withValue.length} ${withValue.length===1?'processo com valor informado':'processos com valor informado'}`;
+  $('resultBadge').textContent=current.length;
+  $('resultText').textContent=`Exibindo ${current.length} de ${records.length} processos`;
+  $('scopeText').textContent=(year==='all'&&status==='all'&&!search)?'Visão de todos os processos':`${current.length} ${current.length===1?'processo no':'processos no'} recorte selecionado`;
+  $('clearFilters').hidden=year==='all'&&status==='all'&&!search;
+  document.querySelectorAll('[data-year]').forEach(b=>{const selected=b.dataset.year===year;b.classList.toggle('selected',selected);b.setAttribute('aria-pressed',String(selected));});
+  $('processRows').innerHTML=current.map(r=>`<tr data-id="${r.id}"><td><a class="process-number" data-sei="${r.id}" href="${seiUrl(r)}" target="_blank" rel="noopener noreferrer" aria-label="Abrir SEI interno, processo ${r.id}" title="Abrir o SEI interno em outra aba; o número será copiado">${r.id}${icon('external')}</a><span class="process-caption">Abrir SEI interno</span></td><td><span class="period-label">${r.label} ${r.year}</span><span class="period-range">${range(r)}</span></td><td class="value-cell"><span class="amount ${r.cents===null?'no-amount':''}">${r.cents===null?'Não informado':currency(r.cents)}</span></td><td>${badge(r)}<span class="status-description">${r.description}</span></td><td><button class="row-arrow" data-detail="${r.id}" aria-label="Abrir processo ${r.id}">${icon('chevron')}</button></td></tr>`).join('');
+  $('emptyState').hidden=current.length!==0;
+  $('barChart').innerHTML=[...current].sort((a,b)=>a.start.localeCompare(b.start)).map(r=>{
+   const value=r.cents===null?'N/I':new Intl.NumberFormat('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}).format(r.cents/100000000);
+   const height=r.cents===null?12:(r.cents/1200000000)*149;
+   return `<button class="bar-column ${r.cents===null?'missing':''}" data-detail="${r.id}" title="${r.label} ${r.year}: ${r.cents===null?'valor não informado':currency(r.cents)}" aria-label="${r.label} ${r.year}, ${r.cents===null?'valor não informado':currency(r.cents)}, abrir processo ${r.id}"><span class="bar-space"><span class="bar-value">${value}</span><span class="bar" style="height:${height}px"></span></span><span class="bar-label">${r.label}</span><span class="bar-year">${r.year}</span></button>`;
+  }).join('');
+  if(!current.length)$('barChart').innerHTML='<span class="chart-empty" style="margin:auto;color:#a0ab95;font-size:10px">Nenhum processo neste recorte</span>';
+  let angle=0;
+  const slices=groups.map(g=>{const count=current.filter(r=>r.group===g.id).length;const start=angle;angle+=current.length?count/current.length*360:0;return `${g.color} ${start}deg ${angle}deg`;});
+  $('donut').style.background=current.length?`conic-gradient(${slices.join(',')})`:'#eef1e9';
+  $('donutCount').textContent=current.length;
+  $('donut').setAttribute('aria-label',groups.map(g=>`${g.label}: ${current.filter(r=>r.group===g.id).length}`).join('; '));
+  $('situationLegend').innerHTML=groups.map(g=>`<button class="legend-button" data-group="${g.id}" style="--dot:${g.color}" aria-pressed="${status===g.id}" aria-label="Filtrar ${g.label}"><i></i><span>${g.label}</span><strong>${current.filter(r=>r.group===g.id).length}</strong></button>`).join('');
+  const suspended=current.filter(r=>r.group==='suspended');
+  $('suspendedNote').innerHTML=`${icon('pause')}<span>Glosa suspensa<strong>${currency(suspended.reduce((s,r)=>s+(r.cents||0),0))}</strong></span><span class="note-quantity">${suspended.length} ${suspended.length===1?'processo':'processos'}</span>`;
+  updateUrl();
+ }
+ function detail(id){
+  const row=records.find(r=>r.id===id);if(!row)return;active=row;
+  $('detailTitle').textContent=row.id;
+  $('detailPeriodLabel').textContent=`${row.label} ${row.year}`;
+  $('detailValue').textContent=row.cents===null?'Não informado':currency(row.cents);
+  $('detailValueNote').textContent=row.cents===null?'Este processo não compõe o total dos valores informados.':row.group==='suspended'?'Valor incluído na soma dos valores informados. A glosa está suspensa.':'Valor informado para este período de referência.';
+  $('detailPeriod').textContent=range(row);
+  $('detailStatus').innerHTML=badge(row);
+  $('detailDescription').textContent=row.description;
+  $('openSei').href=seiUrl(row);$('openSei').dataset.sei=row.id;
+  $('detailDialog').showModal();
+ }
+ function clear(){year='all';$('statusFilter').value='all';$('searchInput').value='';$('sortSelect').value='period-asc';render();}
+ function toast(text){clearTimeout(toastTimer);$('toast').textContent=text;$('toast').hidden=false;toastTimer=setTimeout(()=>$('toast').hidden=true,3500);}
+ function exportCsv(){
+  const header=['Processo','Unidade','Acompanhamento','Início do período','Fim do período','Valor informado (R$)','Situação','Andamento'];
+  const csv=[header,...current.map(r=>[r.id,'HUGO','COMACG',date(r.start),date(r.end),r.cents===null?'Não informado':(r.cents/100).toFixed(2).replace('.',','),r.status,r.description])].map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(';')).join('\r\n');
+  const url=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'}));
+  const link=document.createElement('a');link.href=url;link.download=`hugo-comacg-${year==='all'?'todos':year}.csv`;document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast(`${current.length} ${current.length===1?'processo exportado':'processos exportados'} em CSV`);
+ }
+ document.addEventListener('click',event=>{
+  const seiLink=event.target.closest('[data-sei]');if(seiLink){navigator.clipboard?.writeText(seiLink.dataset.sei).then(()=>toast('Número copiado para pesquisar no SEI')).catch(()=>toast('Use o número do processo na pesquisa do SEI'));return;}
+  const link=event.target.closest('[data-detail]');if(link){detail(link.dataset.detail);return;}
+  const row=event.target.closest('tr[data-id]');if(row){detail(row.dataset.id);return;}
+  const filter=event.target.closest('[data-group]');if(filter){$('statusFilter').value=$('statusFilter').value===filter.dataset.group?'all':filter.dataset.group;render();}
+  const tab=event.target.closest('[data-year]');if(tab){year=tab.dataset.year;render();}
+  const nav=event.target.closest('[data-nav]');if(nav){document.querySelectorAll('[data-nav]').forEach(n=>n.classList.toggle('active',n===nav));}
+ });
+ $('searchInput').addEventListener('input',render);
+ $('statusFilter').addEventListener('change',render);
+ $('sortSelect').addEventListener('change',render);
+ $('clearFilters').addEventListener('click',clear);$('emptyClear').addEventListener('click',clear);
+ $('closeDialog').addEventListener('click',()=>$('detailDialog').close());
+ $('detailDialog').addEventListener('click',e=>{const rect=$('detailDialog').getBoundingClientRect();if(e.clientX<rect.left||e.clientX>rect.right||e.clientY<rect.top||e.clientY>rect.bottom)$('detailDialog').close();});
+ $('copyProcess').addEventListener('click',async()=>{if(!active)return;try{await navigator.clipboard.writeText(active.id);toast('Número do processo copiado');}catch{toast('Não foi possível copiar. Selecione o número do processo.');}});
+ $('exportButton').addEventListener('click',exportCsv);$('printButton').addEventListener('click',()=>window.print());
+ fetch('data.json').then(r=>{if(!r.ok)throw new Error('data');return r.json();}).then(data=>{records=data;render();}).catch(()=>{$('processRows').innerHTML='<tr><td colspan="5">Não foi possível carregar os dados. Atualize a página para tentar novamente.</td></tr>';$('resultText').textContent='Falha ao carregar os processos';toast('Não foi possível carregar a base do painel');});
+})();
